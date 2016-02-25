@@ -53,12 +53,52 @@
     <url-pattern>/AjaxServlet</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>getdevicedata</servlet-name>
+    <servlet-class>location.org.servlet.GetDeviceDataServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>getdevicedata</servlet-name>
+    <url-pattern>/GetDeviceDataServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>getdevicechart</servlet-name>
+    <servlet-class>location.org.servlet.GetDeviceChartServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>getdevicechart</servlet-name>
+    <url-pattern>/GetDeviceChartServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>basedata</servlet-name>
     <servlet-class>location.org.servlet.BasedataServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>basedata</servlet-name>
     <url-pattern>/BasedataServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>addformat</servlet-name>
+    <servlet-class>location.org.servlet.AddFormatServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>addformat</servlet-name>
+    <url-pattern>/AddFormatServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>deleteformat</servlet-name>
+    <servlet-class>location.org.servlet.DeleteFormatServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>deleteformat</servlet-name>
+    <url-pattern>/DeleteFormatServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>adddevice</servlet-name>
+    <servlet-class>location.org.servlet.AddDeviceServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>adddevice</servlet-name>
+    <url-pattern>/AddDeviceServlet</url-pattern>
   </servlet-mapping>
   <filter>
     <filter-name>authority</filter-name>

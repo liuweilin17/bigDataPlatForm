@@ -61,6 +61,7 @@ public class UserDaoImpl implements UserDao{
 		}catch(SQLException e){
 			e.printStackTrace();
 		}finally{
+			DbUtils.closeResultSet(rs);
 			DbUtils.closeStatement(pstmt);
 			DbUtils.closeConnection();
 		}
@@ -89,6 +90,7 @@ public class UserDaoImpl implements UserDao{
 		}catch(SQLException e){
 			e.printStackTrace();
 		}finally{
+			DbUtils.closeResultSet(rs);
 			DbUtils.closeStatement(pstmt);
 			DbUtils.closeConnection();
 		}

@@ -97,37 +97,11 @@
  		                				+"&pro_name="+oData.pro_name+"'>进入</a>")
  		                }
  				 	}
- 				 ],
-				 
+ 				 ]
  			});
 			return table;
 		}
-		
-		function showBaseData(bl_id){
-			console.log(bl_id);
-			/* $('#basedataTable').dataTable({
-				"processing" : true,  
-	            "serverSide" : true,  
-	            "paginationType":"full_numbers",  
-	            "ajax" : "BasedataServlet?bl_id="+bl_id,  
-            	"columns" : [   
-		                {"data" : "b_time"},  
-		                {"data" : "b_prec"},  
-		                {"data" : "b_lat"},
-		                {"data" : "b_lon"},
-		                {"data" : "b_x"},
-		                {"data" : "b_y"},
-		                {"data" : "b_z"}
-	             ]  
 
-			}); */
-			
-		}
-		
-		function deleteBaseData(bl_id){
-			console.log(bl_id);
-			
-		}
 	</script>
 </body>
 </html>

@@ -51,6 +51,7 @@ public class ProjectDaoImpl implements ProjectDao{
 		}catch(SQLException e){
 			e.printStackTrace();
 		}finally{
+			DbUtils.closeResultSet(rs);
 			DbUtils.closeStatement(pstmt);
 			DbUtils.closeConnection();
 		}
@@ -80,6 +81,7 @@ public class ProjectDaoImpl implements ProjectDao{
 		}catch(SQLException e){
 			e.printStackTrace();
 		}finally{
+			DbUtils.closeResultSet(rs);
 			DbUtils.closeStatement(pstmt);
 			DbUtils.closeConnection();
 		}

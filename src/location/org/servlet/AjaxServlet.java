@@ -6,11 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import location.org.api.ParseLonLat;
 import location.org.dao.Basedata;
@@ -28,6 +30,9 @@ import location.org.dao.FormatDaoImpl;
 import location.org.dao.Project;
 import location.org.dao.ProjectDao;
 import location.org.dao.ProjectDaoImpl;
+import location.org.dao.Type;
+import location.org.dao.TypeDao;
+import location.org.dao.TypeDaoImpl;
 import net.sf.json.JSONObject;
 
 
@@ -65,7 +70,6 @@ public class AjaxServlet extends HttpServlet {
 		if(flag.equals("1")){
 			ProjectDao projectdao = new ProjectDaoImpl();
 			List<Project> projectList = projectdao.findProject(username);
-			//System.out.println("fe");
 			JSONObject obj = new JSONObject();
 			obj.put("aaData", projectList);
 			//System.out.println("ajax:"+obj.toString());
@@ -102,6 +106,24 @@ public class AjaxServlet extends HttpServlet {
 			//System.out.println(format.getFor_name());
 			JSONObject obj = new JSONObject();
 			obj.put("data", format);
+			response.getWriter().println(obj.toString());
+		//5--返回系统中变量类型列表
+		}else if(flag.equals("5")){
+			TypeDao typedao = new TypeDaoImpl();
+			List<Type> typeList = typedao.findType();
+			JSONObject obj = new JSONObject();
+			obj.put("data", typeList);
+			response.getWriter().println(obj.toString());
+		//6--删除设备
+		}else if(flag.equals("6")){
+			JSONObject obj = new JSONObject();
+			int dev_id = Integer.parseInt(request.getParameter("dev_id"));
+			DeviceDao devicedao = new DeviceDaoImpl();
+			if(devicedao.deleteDevice(dev_id)){
+				obj.put("ret", "success!");
+			}else{
+				obj.put("ret", "error!");
+			}
 			response.getWriter().println(obj.toString());
 		//3--获取basedata折线图数据的请求
 		}else if(flag.equals("5")){

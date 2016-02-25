@@ -16,7 +16,7 @@
 	</div>
 </div>
 	<div class="col-md-2">
-		<ul class="nav nav-stacked" role="tablist">
+		<ul class="nav nav-stacked" role="tablist" data-spy="affix">
 	      <li role="presentation" class="active"><a href="#devicePage" id="device-tab" role="tab" data-toggle="tab" aria-controls="devicePage" aria-expanded="true">设备管理</a></li>
 	      <li role="presentation"><a href="#displayPage" role="tab" id="display-tab" data-toggle="tab" aria-controls="displayPage">数据展示</a></li>
 	      <li role="presentation"><a href="#warningPage" role="tab" id="warning-tab" data-toggle="tab" aria-controls="warningPage">预警</a></li>
@@ -29,7 +29,7 @@
 	    <div class="tab-content">
 	    <!-- device page  -->
 	      <div role="tabpanel" class="tab-pane fade in active" id="devicePage" aria-labelledBy="device-tab">
-	      
+	     
 		      <ul class="nav nav-tabs" role="tablist">
 			    <li role="presentation" class="active"><a href="#deviceTypePage" aria-controls="deviceTypePage" role="tab" data-toggle="tab">查看设备类型</a></li>
 			    <%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
@@ -51,22 +51,39 @@
 								<tr>
 									<th>类型ID</th>
 									<th>类型名称</th>
-									<th>操作</th>	
+									<th>操作</th>
+								</tr>	
 							</thead>
 							<tbody></tbody>
 						</table>
-						<div class="panel panel-success">
-							<div class="panel-heading" id="deviceTypeDetailHeading"></div>
-							<table class="table table-hover">
-								<thead>
-									<tr>
-										<th>数据名称</th>
-										<th>数据类型</th>
-									</tr>
-								</thead>
+						
+						<!-- Modal -->
+						<div class="modal fade" id="deviceTypeDetail" tabindex="-1" role="dialog" aria-labelledby="deviceTypeDetailHeading">
+						  <div class="modal-dialog" role="document">
+						    <div class="modal-content">
+						      <div class="modal-header">
+						        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						        <h4 class="modal-title" id="deviceTypeDetailHeading">Modal title</h4>
+						      </div>
+						      <div class="modal-body">
+						        <table class="table table-hover">
+									<thead>
+										<tr>
+											<th>数据名称</th>
+											<th>数据类型</th>
+										</tr>
+									</thead>
 								<tbody id="deviceTypeDetailTbody"></tbody>
-							</table>
+								</table>
+						      </div>
+						      <div class="modal-footer">
+						        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						      </div>
+						    </div>
+						  </div>
 						</div>
+						<!-- modal -->
+						
 		        	</div>
 			    </div>
 			    <!-- device type page end -->
@@ -74,11 +91,14 @@
 			    <!-- add device type page -->
 			    <div role="tabpanel" class="tab-pane" id="addDeviceTypePage">
 			    	<div style="margin-top:20px">
-				        <form class="form-horizontal" action="" method="POST">
+				        <div class="form-horizontal" >
+				          <div class="form-group">
+				          	<p class="text-danger col-md-2 col-md-offset-2" id="addDeviceTypeError"></p>
+				          </div>
 						  <div class="form-group">
 						    <label for="deviceTypeName" class="col-md-2 control-label">类型名称</label>
 						    <div class="col-md-5">
-						      <input type="text" class="form-control" id="deviceTypeName" name="deviceTypeName" placeholder="设备名">
+						      <input type="text" class="form-control" id="deviceTypeName" name="deviceTypeName" placeholder="设备类型名">
 						    </div>
 						  </div>
 						  <div class="form-group" id="varNumFormGroup">
@@ -94,6 +114,7 @@
 						       </thead>
 						       <tbody></tbody>
 						    </table>
+						    <input type="text" id="for_num" name="for_num" value="0" style="display:none">
 						    </div>
 						    <button style="margin-bottom:10px" class="btn btn-warning col-md-offset-2" type="button" id="but" >
 						    	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -101,10 +122,10 @@
 						  </div>
 						  <div class="form-group">
 						    <div class="col-md-offset-1">
-						      <button type="submit" class="btn btn-success">添加</button>
+						      <button id="addDeviceTypeBtn" class="btn btn-success">添加</button>
 						    </div>
 						  </div>
-					  	</form>
+					  	</div><!-- </form> -->
 				    </div>
 			    </div>
 			    <!-- add device type page end -->
@@ -129,8 +150,10 @@
 			    <!-- add device instance page -->
 			    <div role="tabpanel" class="tab-pane" id="addDeviceInstancePage">
 				    <div style="margin-top:20px">
-				        <form class="form-horizontal" action="" method="POST">
-				        
+				        <div class="form-horizontal">
+						  <div class="form-group">
+				          	<p class="text-danger col-md-2 col-md-offset-2" id="addDeviceInstanceError"></p>
+				          </div>
 				          <div class="form-group">
 				          	<label class="radio-inline col-md-2 control-label">
 							  <input type="radio" name="batchOptions" id="single" value="0" checked>个例添加
@@ -144,6 +167,12 @@
 						    <label for="deviceName" class="col-md-2 control-label">设备名</label>
 						    <div class="col-md-5">
 						      <input type="text" class="form-control" id="deviceName" name="deviceName" placeholder="设备名">
+						    </div>
+						  </div>
+						  <div class="form-group" id="deviceNamePrefixInput" style="display:none">
+						    <label for="deviceNamePrefix" class="col-md-2 control-label">设备前缀名</label>
+						    <div class="col-md-5">
+						      <input type="text" class="form-control" id="deviceNamePrefix" name="deviceNamePrefix" placeholder="设备前缀名">
 						    </div>
 						  </div>
 						  <div class="form-group">
@@ -162,10 +191,10 @@
 						  
 						  <div class="form-group">
 						    <div class="col-sm-offset-2 col-sm-10">
-						      <button type="submit" class="btn btn-success">添加</button>
+						      <button id="addDeviceInstanceBtn" class="btn btn-success">添加</button>
 						    </div>
 						  </div>
-					  	</form>
+					  	</div><!-- </form> -->
 				    </div>
 			    </div>
 			    <!-- add device instance page end -->
@@ -200,59 +229,72 @@
 			</ul>
 			  <!-- Tab panes -->
 			  <div class="tab-content">
+			  	<!-- dataTable page -->
 			    <div role="tabpanel" class="tab-pane active" id="dataTablePage">
 				    <table class="table table-hover" id="deviceDataTable">
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>height</th>
-								<th>width</th>
-						</thead>
+						<thead></thead>
 						<tbody></tbody>
 					</table>
 			    </div>
+			    <!-- dataTablePage page end -->
 			    <div role="tabpanel" class="tab-pane" id="dataChartPage">
-				  <div class="col-md-10">
-				    <div class="col-md-3">
+				  <div class="row">
+				    <div class="col-md-2">
 				    	<ul class="nav nav-stacked" role="tablist">
 					      <li role="presentation" class="active"><a href="#line" id="line-tab" role="tab" data-toggle="tab" aria-controls="line" aria-expanded="true">折线图</a></li>
 					      <li role="presentation"><a href="#area" role="tab" id="area-tab" data-toggle="tab" aria-controls="area">区域图</a></li>
-					      <li role="presentation"><a href="#pie" role="tab" id="pie-tab" data-toggle="tab" aria-controls="pie">饼状图</a></li>
 					      <li role="presentation"><a href="#scatter" role="tab" id="scatter-tab" data-toggle="tab" aria-controls="scatter">散点图</a></li>
 					    </ul>
 				    </div>
-				    <div class="col-md-7">
-				    	<div class="form-group" style="margin-top:20px">
-						    <label for="xType" class="col-md-1 control-label">x</label>
-						    <div class="col-md-5">
-						      <select class="form-control" id="xType" name="xType">
-						      <option>latitude</option>
-						      <option>longtitude</option>
-						      <option>timestamp</option>
-							  </select>
-						    </div>
-						    <label for="yType" class="col-md-1 control-label">y</label>
-						    <div class="col-md-5">
-						      <select class="form-control" id="yType" name="yType">
-						      <option>latitude</option>
-						      <option>longtitude</option>
-						      <option>timestamp</option>
-							  </select>
-						    </div>
-						</div>
-						
+				    <div class="col-md-10">
 					    <div class="tab-content">
 					    	<div role="tabpanel" class="tab-pane fade in active" id="line" aria-labelledBy="line-tab">
-					    		1
+					    		<div><h3 id="dev_name_line"></h3></div>
+					    		<div style="display:none"><h3 id="dev_id_line"></h3></div>
+							    <div class="form-group" style="margin-top:20px">
+								    <label for="lineX" class="col-md-1 control-label">x</label>
+								    <div class="col-md-3">
+								      <select class="form-control" id="lineX" name="lineX"></select>
+								    </div>
+								    <label for="lineY" class="col-md-1 control-label">y</label>
+								    <div class="col-md-3">
+								      <select class="form-control" id="lineY" name="lineY"></select>
+								    </div>
+								    <button class="btn btn-success" id="lineBtn" style="float:right">确定</button>
+								</div>
+								<div id="lineChart"></div>
 					    	</div>
 					    	<div role="tabpanel" class="tab-pane fade" id="area" aria-labelledBy="area-tab">
-					    		2
-					    	</div>
-					    	<div role="tabpanel" class="tab-pane fade" id="pie" aria-labelledBy="pie-tab">
-					    		3
+					    		<div><h3 id="dev_name_area"></h3></div>
+					    		<div style="display:none"><h3 id="dev_id_area"></h3></div>
+							    <div class="form-group" style="margin-top:20px">
+								    <label for="areaX" class="col-md-1 control-label">x</label>
+								    <div class="col-md-3">
+								      <select class="form-control" id="areaX" name="areaX"></select>
+								    </div>
+								    <label for="areaY" class="col-md-1 control-label">y</label>
+								    <div class="col-md-3">
+								      <select class="form-control" id="areaY" name="areaY"></select>
+								    </div>
+								    <button class="btn btn-success" id="areaBtn" style="float:right">确定</button>
+								</div>
+								<div id="areaChart"></div>
 					    	</div>
 					    	<div role="tabpanel" class="tab-pane fade" id="scatter" aria-labelledBy="scatter-tab">
-					    		4
+					    		<div><h3 id="dev_name_scatter"></h3></div>
+					    		<div style="display:none"><h3 id="dev_id_scatter"></h3></div>
+							    <div class="form-group" style="margin-top:20px">
+								    <label for="scatterX" class="col-md-1 control-label">x</label>
+								    <div class="col-md-3">
+								      <select class="form-control" id="scatterX" name="scatterX"></select>
+								    </div>
+								    <label for="scatterY" class="col-md-1 control-label">y</label>
+								    <div class="col-md-3">
+								      <select class="form-control" id="scatterY" name="scatterY"></select>
+								    </div>
+								    <button class="btn btn-success" id="scatterBtn" style="float:right">确定</button>
+								</div>
+								<div id="scatterChart"></div>
 					    	</div>
 					    </div>
 				    </div>
@@ -310,45 +352,223 @@
 		$("#but").click(function(){
             var _len = $("#formatTable tbody tr").length;        
             $("#formatTable tbody").append("<tr id="+_len+">"
-                                +"<td><input type='text'></td>"
-                                +"<td><input type='text'></td>"
+                                +"<td><input type='text' name=fname"+_len+"></td>"
+                                +"<td><select name=ftype"+_len+"></select></td>"
                                 +"<td><button class='btn btn-danger' onclick='deltr("+_len+")'>"
                                 +"<span class='glyphicon glyphicon-remove' aria-hidden='true'></span>"
                                 +"</button></td>"
-                            +"</tr>");            
+                            +"</tr>");
+            $("#for_num").attr("value",_len+1);
+			initTypeList(_len);
         }); 
 		function deltr(index){
 	    	var _len = $("#formatTable tbody tr").length;
 	       	if( _len == 1){
 	       		$("tr[id='"+index+"']").remove();
+	       		$("#for_num").attr("value",'0');
 	       	}else{
 		        for(var i=index;i<_len-1;i++){
 		        	$("tr[id=\'"+(i+1)+"\']").each(function(trindex,tritem){
 		    		 value1 = jQuery(tritem).find("td").eq(0).find("input").val();
-		    		 value2 = (jQuery(tritem).find("td").eq(1).find("input").val());
+		    		 value2 = (jQuery(tritem).find("td").eq(1).find("select option:selected").text());
 		    		}); 
 		        	$("tr[id=\'"+i+"\']")
 	         		.replaceWith("<tr id="+i+">"
-	                                +"<td><input type='text' value='" + value1 + "'/></td>"
-	                                +"<td><input type='text' value='" + value2 + "'/></td>"
+	                                +"<td><input type='text' value='" + value1 + "'name=fname" + i + "'/></td>"
+	                                +"<td><select name=ftype"+ i +"></select></td>"
 	                                +"<td><button class='btn btn-danger' onclick=\'deltr(" + i + ")\'>"
 	                                +"<span class='glyphicon glyphicon-remove' aria-hidden='true'></span>"
 	                                +"</button></td>"
 	                            +"</tr>");
+		        	updateTypeList(i,value2);
 		        }
 		        $("tr[id='"+(_len-1)+"']").remove();
+		        $("#for_num").attr("value",_len-1);
 	       	}
 		}
 		$('input[id=single]').click(function(){
 			//console.log(0);
 			$('div[id=deviceNameInput]').css('display','block');
 			$('div[id=deviceNumInput]').css('display','none');
+			$('div[id=deviceNamePrefixInput]').css('display','none');
 		});
 		$('input[id=batch]').click(function(){
 			//console.log(1);
 			$('div[id=deviceNameInput]').css('display','none');
 			$('div[id=deviceNumInput]').css('display','block');
+			$('div[id=deviceNamePrefixInput]').css('display','block');
 		});
+		$('#addDeviceTypeBtn').click(function(){
+			$("#addDeviceTypeError").text("");
+			var for_name = $("#deviceTypeName").val();
+			var for_num = $("#for_num").val();
+			var pro_id = $("#pro_id").text();
+			var for_namelist = "";
+			var for_typelist = "";
+			//alert("for_name:"+for_name);
+			//alert("for_num:"+for_num);
+			//alert("pro_id:"+pro_id);
+			//检查设备类型名
+			if(for_name == "" || for_name == null){
+				$("#addDeviceTypeError").text("设备类型名不能为空！");
+				return;
+			}
+			if(for_num == "0"){
+				$("#addDeviceTypeError").text("数据格式数不能为0！");
+				return;
+			}
+			//检查变量名
+			for(var i = 0;i<for_num;i++){
+				var tmp1 = $("input[name='fname"+i+"']").val();
+				var tmp2 = $("select[name='ftype"+i+"']").find("option:selected").text();
+				//alert(tmp1);
+				if(tmp1==""||tmp1==null){
+					$("#addDeviceTypeError").text("变量名不能为空！");
+					return;
+				}
+				if(i == for_num - 1){
+					for_namelist=for_namelist + tmp1;
+					for_typelist=for_typelist + tmp2;
+				}else{
+					for_namelist=for_namelist + tmp1 +",";
+					for_typelist=for_typelist + tmp2+ ",";
+				}
+			}
+			//访问服务器，判断format有效性，插入format数据库，新建表，返回信息
+			//alert("for_namelist:"+for_namelist);
+			//alert("for_typelist:"+for_typelist);
+			$.ajax({  
+			      type: "POST",  
+			      url: "AddFormatServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "for_name": for_name,  
+			          "for_namelist": for_namelist,
+			          "for_typelist": for_typelist,
+			          "pro_id": pro_id,
+			          "for_num": for_num
+			      },  
+			      success: function(data) {
+			    	  alert(data.ret);
+			    	  //dataTable(){}返回一个jQuery,DataTable(){}返回一个api对象,前者可能出现有的函数是用不了。
+			    	  //使用api()将jQuery对象转化为api对象
+			    	  deviceTypeTable.api().ajax.reload();
+			    	  alert("刷新完毕");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      //alert(XMLHttpRequest.status);//200
+                      //alert(XMLHttpRequest.readyState);//4
+                      //alert(textStatus);//parseerror
+                      alert("error!");
+                  }
+			  });
+		});
+		$('#addDeviceInstanceBtn').click(function(){
+			$("#addDeviceInstanceError").text("");
+			var pro_id = $("#pro_id").text();
+			var opt = $("input[name=batchOptions]:checked").val();
+			if(opt=="0"){
+				var dev_name = $("#deviceName").val();
+				var for_name = $("select[name='deviceType']").find("option:selected").text();
+				//alert("dev_name:"+dev_name);
+				//alert("for_name:"+for_name);
+				//alert("pro_id:"+pro_id);
+				//检查设备名
+				if(dev_name == "" || dev_name == null){
+					$("#addDeviceInstanceError").text("设备名不能为空！");
+					return;
+				}
+				//访问服务器，判断device有效性，插入device数据库，返回信息
+				$.ajax({  
+				      type: "POST",  
+				      url: "AddDeviceServlet",
+				      async: true,
+				      dataType: "json",  
+				      cache: false,  
+			      	  data: {
+			      		  "batch": false,
+				          "dev_name": dev_name,  
+				          "pro_id": pro_id,
+				          "for_name": for_name
+				      },  
+				      success: function(data) {
+				    	  alert(data.ret);
+				    	  deviceTable.api().ajax.reload();
+				    	  alert("刷新完毕");
+				      },
+				      error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                      //alert(XMLHttpRequest.status);//200
+	                      //alert(XMLHttpRequest.readyState);//4
+	                      //alert(textStatus);//parseerror
+	                      alert("error!");
+	                  }
+				  });
+			}else{
+				var dev_name_prefix = $("#deviceNamePrefix").val();
+				var for_name = $("select[name='deviceType']").find("option:selected").text();
+				var dev_num = $("#deviceNum").val();
+				//alert("dev_name_prefix:"+dev_name_prefix);
+				//alert("for_name:"+for_name);
+				//alert("pro_id:"+pro_id);
+				//alert("dev_num:"+dev_num);
+				//检查设备名
+				if(dev_name_prefix == "" || dev_name_prefix == null){
+					$("#addDeviceInstanceError").text("设备前缀名不能为空！");
+					return;
+				}
+				//访问服务器，判断device有效性，插入device数据库，返回信息
+				$.ajax({  
+				      type: "POST",  
+				      url: "AddDeviceServlet",
+				      async: true,
+				      dataType: "json",  
+				      cache: false,  
+			      	  data: {
+			      		  "batch": true, 
+				          "dev_name_prefix": dev_name_prefix,  
+				          "pro_id": pro_id,
+				          "for_name": for_name,
+				          "dev_num": dev_num
+				      },  
+				      success: function(data) {
+				    	  alert(data.ret);
+				    	  deviceTable.api().ajax.reload();
+				    	  alert("刷新完毕");
+				      },
+				      error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                      //alert(XMLHttpRequest.status);//200
+	                      //alert(XMLHttpRequest.readyState);//4
+	                      //alert(textStatus);//parseerror
+	                      alert("error!");
+	                  }
+				  });
+			}
+			
+		});
+		function initTypeList(n){
+			$.get("AjaxServlet?flag=5",function(data,status){
+				var obj = jQuery.parseJSON(data);
+				var len = obj.data.length;
+				for(var i = 0;i<len;i++){
+					$("select[name='ftype"+n+"']").append("<option>"+obj.data[i].t_name+"</option>");
+				}
+			});
+		}
+		function updateTypeList(n,value){
+			$.get("AjaxServlet?flag=5",function(data,status){
+				var obj = jQuery.parseJSON(data);
+				var len = obj.data.length;
+				for(var i = 0;i<len;i++){
+					if(obj.data[i].t_name == value){
+						$("select[name='ftype"+n+"']").append("<option selected>"+obj.data[i].t_name+"</option>");
+					}else{
+						$("select[name='ftype"+n+"']").append("<option>"+obj.data[i].t_name+"</option>");
+					}
+				}
+			});
+		}
 		function initSelect(){
 			var pro_id = $('#pro_id').text();
 			$.get("AjaxServlet?flag=3&pro_id="+pro_id,function(data,status){
@@ -356,8 +576,6 @@
 				var len = obj.aaData.length;
 				for(var i = 0;i<len;i++){
 					$("select[id='deviceType']").append("<option>"+obj.aaData[i].for_name+"</option>");
-					//$("select[id='xType']").append("<option>"+obj.aaData[i].for_name+"</option>");
-					//$("select[id='yType']").append("<option>"+obj.aaData[i].for_name+"</option>");
 				}
 			});
 		}
@@ -365,17 +583,116 @@
 			deviceTable = initDeviceTable();
 			deviceTypeTable = initDeviceTypeTable();
 			displayTable = initDisplayTable();
-			lineChart = initLineChart();
-			areaChart = initAreaChart();
-			pieChart = initPieChart();
-			scatterChart = initScatterChart();
+			//scatterChart = initScatterChart();
 			initSelect();
+		});
+		$("#lineBtn").click(function(){
+			var dev_name = $("#dev_name_line").text();
+			var dev_id = $("#dev_id_line").text();
+			var xName = $("#lineX").find("option:selected").text();
+			var yName = $("#lineY").find("option:selected").text();
+			//alert("xName:"+xName);
+			//alert("yName:"+yName);
+			//alert("dev_id:"+dev_id);
+			$.ajax({  
+			      type: "POST",  
+			      url: "GetDeviceChartServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "dev_id": dev_id,
+			          "xName": xName,
+			          "yName": yName
+			      },  
+			      success: function(data) {
+			    	  alert("begin initLineChart!");
+			    	  initLineChart(dev_name,xName,yName,data.xData,data.yData);
+			    	  alert("end initLineChart!");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+			    	alert("error!");
+                    alert(XMLHttpRequest.status);//200
+                    alert(XMLHttpRequest.readyState);//4
+                    alert(textStatus);//parseerror
+                    
+                }
+			  });
+			
+		});
+		$("#areaBtn").click(function(){
+			var dev_name = $("#dev_name_area").text();
+			var dev_id = $("#dev_id_area").text();
+			var xName = $("#areaX").find("option:selected").text();
+			var yName = $("#areaY").find("option:selected").text();
+			//alert("xName:"+xName);
+			//alert("yName:"+yName);
+			//alert("dev_id:"+dev_id);
+			$.ajax({  
+			      type: "POST",  
+			      url: "GetDeviceChartServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "dev_id": dev_id,
+			          "xName": xName,
+			          "yName": yName
+			      },  
+			      success: function(data) {
+			    	  alert("begin initAreaChart!");
+			    	  initAreaChart(dev_name,xName,yName,data.xData,data.yData);
+			    	  alert("end initAreaChart!");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+			    	alert("error!");
+                    alert(XMLHttpRequest.status);//200
+                    alert(XMLHttpRequest.readyState);//4
+                    alert(textStatus);//parseerror
+                    
+                }
+			  });
+			
+		});
+		$("#scatterBtn").click(function(){
+			var dev_name = $("#dev_name_scatter").text();
+			var dev_id = $("#dev_id_scatter").text();
+			var xName = $("#scatterX").find("option:selected").text();
+			var yName = $("#scatterY").find("option:selected").text();
+			//alert("xName:"+xName);
+			//alert("yName:"+yName);
+			//alert("dev_id:"+dev_id);
+			$.ajax({  
+			      type: "POST",  
+			      url: "GetDeviceChartServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "dev_id": dev_id,
+			          "xName": xName,
+			          "yName": yName
+			      },  
+			      success: function(data) {
+			    	  alert("begin initScatterChart!");
+			    	  initScatterChart(dev_name,xName,yName,data.xData,data.yData);
+			    	  alert("end initScatterChart!");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+			    	alert("error!");
+                    alert(XMLHttpRequest.status);//200
+                    alert(XMLHttpRequest.readyState);//4
+                    alert(textStatus);//parseerror
+                    
+                }
+			  });
+			
 		});
 		function getFormatName(nTd,oData){
 			$.ajax({  
 				      type: "GET",  
 				      url: "AjaxServlet",
-				      async: "true",
+				      async: true,
 				      dataType: "json",  
 				      cache: false,  
 			      	  data: {  
@@ -385,9 +702,8 @@
 				      success: function(data) {
 				    	  //alert("success");
 				    	  ret = data.data.for_name;
-				    	  $(nTd).html("<button class='btn btn-info' onclick='showFormat("
- 		                				+oData.for_id
- 		                				+")'>" + ret + "</button>");
+				    	  $(nTd).html("<button class='btn btn-info'"
+ 		                				+">" + ret + "</button>");
 				      }  
 				  });
 		}
@@ -440,7 +756,7 @@
  				 	{"mDataProp": "for_name"},
  				 	{"mDataProp": "for_id",
  				 		"fnCreatedCell": function(nTd,sData,oData,iRow,iCol){
- 		                		$(nTd).html("<button class='btn btn-info' onclick='showFormat("
+ 		                		$(nTd).html("<button class='btn btn-info' data-toggle='modal' data-target='#deviceTypeDetail' onclick='showFormat("
  		                				+oData.for_id
  		                				+")'>查看</button><button class='btn btn-danger' onclick='deleteFormat("
  		                				+oData.for_id
@@ -476,25 +792,26 @@
  			});
 			return table;
 		}
-		function initLineChart(){
+		function initLineChart(dev_name,xName,yName,xData,yData){
+			
 		    var chart=new Highcharts.Chart({
 		    	 chart: {
-		    		 renderTo: line
+		    		 renderTo: lineChart
 		    	 },
 		    	 title: {
-		             text: 'Monthly Average Temperature',
-		             x: -20 //center
-		         },
-		         subtitle: {
-		             text: 'Source: WorldClimate.com',
-		             x: -20
-		         },
+			            text: ''
+			     },
 		         xAxis: {
-		             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+		             //categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+		         	title:{
+		         		text: xName
+		         	},
+		         	categories: xData
 		         },
 		         yAxis: {
 		             title: {
-		                 text: 'Temperature (°C)'
+		                 //text: 'Temperature (°C)'
+		                 text: yName
 		             },
 		             plotLines: [{
 		                 value: 0,
@@ -503,7 +820,7 @@
 		             }]
 		         },
 		         tooltip: {
-		             valueSuffix: '°C'
+		             //valueSuffix: '°C'
 		         },
 		         legend: {
 		             layout: 'vertical',
@@ -512,56 +829,54 @@
 		             borderWidth: 0
 		         },
 		         series: [{
-		             name: 'Tokyo',
-		             data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
-		         }, {
-		             name: 'New York',
-		             data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
-		         }, {
-		             name: 'Berlin',
-		             data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
-		         }, {
-		             name: 'London',
-		             data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+		             //name: 'Tokyo',
+		             //data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+		         	 name: dev_name,
+		         	 data: yData
 		         }]
 		     });
 		    return chart;
 		}
-		function initAreaChart(){
+		function initAreaChart(dev_name,xName,yName,xData,yData){
 			var chart = new Highcharts.Chart({
 				 chart: {
 			            type: 'area',
-			            renderTo: 'area'
+			            renderTo: areaChart
 			        },
 			        title: {
-			            text: 'US and USSR nuclear stockpiles'
-			        },
-			        subtitle: {
-			            text: 'Source: thebulletin.metapress.com'
+			            text: ''
 			        },
 			        xAxis: {
-			            labels: {
-			                formatter: function() {
-			                    return this.value; // clean, unformatted number for year
-			                }
-			            }
+			            //labels: {
+			            //    formatter: function() {
+			            //        return this.value; // clean, unformatted number for year
+			            //    }
+			           // }
+			        	title:{
+			         		text: xName
+			         	},
+			         	categories: xData
 			        },
 			        yAxis: {
-			            title: {
-			                text: 'Nuclear weapon states'
-			            },
-			            labels: {
-			                formatter: function() {
-			                    return this.value / 1000 +'k';
-			                }
-			            }
+			            //title: {
+			            //    text: 'Nuclear weapon states'
+			           // },
+			            //labels: {
+			           //     formatter: function() {
+			            //        return this.value / 1000 +'k';
+			            //    }
+			           // }
+			        	title: {
+			                 //text: 'Temperature (°C)'
+			                 text: yName
+			             }
 			        },
 			        tooltip: {
-			            pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
+			            //pointFormat: '{series.name} produced <b>{point.y:,.0f}</b><br/>warheads in {point.x}'
 			        },
 			        plotOptions: {
 			            area: {
-			                pointStart: 1940,
+			                //pointStart: 1940,
 			                marker: {
 			                    enabled: false,
 			                    symbol: 'circle',
@@ -574,111 +889,58 @@
 			                }
 			            }
 			        },
+			        legend: {
+			             layout: 'vertical',
+			             align: 'right',
+			             verticalAlign: 'middle',
+			             borderWidth: 0
+			         },
 			        series: [{
-			            name: 'USA',
-			            data: [null, null, null, null, null, 6 , 11, 32, 110, 235, 369, 640,1005, 1436,
+			            //name: 'USA',
+			            /*data: [null, null, null, null, null, 6 , 11, 32, 110, 235, 369, 640,1005, 1436,
 			            		2063, 3057, 4618, 6444, 9822, 15468, 20434, 24126,27387, 29459, 31056, 31982,
 			            		32040, 31233, 29224, 27342, 26662,26956, 27912, 28999, 28965, 27826, 25579,
 			            		25722, 24826, 24605,24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344,
 			            		23586,22380, 21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950,
-			                10871, 10824, 10577, 10527, 10475, 10421, 10358, 10295, 10104 
-			            ]
-			        }, {
-			            name: 'USSR/Russia',
-			            data: [null, null, null, null, null, null, null , null , null ,null,5, 25, 50,
-			            	120, 150, 200, 426, 660, 869, 1060, 1605, 2471, 3322,4238, 5221, 6129,
-			            	7089, 8339, 9399, 10538, 11643, 13092, 14478,15915, 17385, 19055, 21205,
-			            	23044, 25393, 27935, 30062, 32049,33952, 35804, 37431, 39197, 45000, 43000,
-			            	41000, 39000, 37000,35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000,
-			            	22000,21000, 20000, 19000, 18000, 18000, 17000, 16000
-			            ]
+			                10871, 10824, 10577, 10527, 10475, 10421, 10358, 10295, 10104 ]*/
+			             name: dev_name,
+			             data: yData
+			            
 			        }]
 			    });
 			return chart;
 		}
-		function initPieChart(){
-			var chart = new Highcharts.Chart({
-			        chart: {
-			        	renderTo: pie,
-			            plotBackgroundColor: null,
-			            plotBorderWidth: null,
-			            plotShadow: false
-			        },
-			        title: {
-			            text: 'Browser market shares at a specific website, 2010'
-			        },
-			        tooltip: {
-			    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-			        },
-			        plotOptions: {
-			            pie: {
-			                allowPointSelect: true,
-			                cursor: 'pointer',
-			                dataLabels: {
-			                    enabled: true,
-			                    color: '#000000',
-			                    connectorColor: '#000000',
-			                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-			                }
-			            }
-			        },
-			        series: [{
-			            type: 'pie',
-			            name: 'Browser share',
-			            data: [
-			                ['Firefox',   45.0],
-			                ['IE',       26.8],
-			                {
-			                    name: 'Chrome',
-			                    y: 12.8,
-			                    sliced: true,
-			                    selected: true
-			                },
-			                ['Safari',    8.5],
-			                ['Opera',     6.2],
-			                ['Others',   0.7]
-			            ]
-			        }]
-			    });
-			return chart;
-		}
-		function initScatterChart(){
+		function initScatterChart(dev_name,xName,yName,xData,yData){
 			var chart = new Highcharts.Chart({
 				 chart: {
-					 	renderTo: scatter,
-			            type: 'scatter',                                                                 
-			            zoomType: 'xy'                                                                   
+					 	renderTo: scatterChart,
+			            type: 'scatter'                                                                 
+			            //zoomType: 'xy'                                                                   
 			        },                                                                                   
 			        title: {                                                                             
-			            text: 'Height Versus Weight of 507 Individuals by Gender'                        
-			        },                                                                                   
-			        subtitle: {                                                                          
-			            text: 'Source: Heinz  2003'                                                      
-			        },                                                                                   
+			            text: ''                        
+			        },                                                                                                                                                               
 			        xAxis: {                                                                             
 			            title: {                                                                         
 			                enabled: true,                                                               
-			                text: 'Height (cm)'                                                          
+			                text: xName                                                          
 			            },                                                                               
 			            startOnTick: true,                                                               
 			            endOnTick: true,                                                                 
-			            showLastLabel: true                                                              
+			            showLastLabel: true,
+			            categories: xData
 			        },                                                                                   
 			        yAxis: {                                                                             
 			            title: {                                                                         
-			                text: 'Weight (kg)'                                                          
+			                text: yName                                                          
 			            }                                                                                
 			        },                                                                                   
-			        legend: {                                                                            
-			            layout: 'vertical',                                                              
-			            align: 'left',                                                                   
-			            verticalAlign: 'top',                                                            
-			            x: 100,                                                                          
-			            y: 70,                                                                           
-			            floating: true,                                                                  
-			            backgroundColor: '#FFFFFF',                                                      
-			            borderWidth: 1                                                                   
-			        },                                                                                   
+			        legend: {
+			             layout: 'vertical',
+			             align: 'right',
+			             verticalAlign: 'middle',
+			             borderWidth: 0
+			         },                                                                 
 			        plotOptions: {                                                                       
 			            scatter: {                                                                       
 			                marker: {                                                                    
@@ -698,15 +960,14 @@
 			                    }                                                                        
 			                },                                                                           
 			                tooltip: {                                                                   
-			                    headerFormat: '<b>{series.name}</b><br>',                                
-			                    pointFormat: '{point.x} cm, {point.y} kg'                                
+			                    //headerFormat: '<b>{series.name}</b><br>',                                
+			                    //pointFormat: '{point.x} cm, {point.y} kg'                                
 			                }                                                                            
 			            }                                                                                
 			        },                                                                                   
 			        series: [{                                                                           
-			            name: 'Female',                                                                  
-			            color: 'rgba(223, 83, 83, .5)',                                                  
-			            data: [[161.2, 51.6], [167.5, 59.0], [159.5, 49.2], [157.0, 63.0], [155.8, 53.6],
+			            name: dev_name,                                                                                                                  
+			            /*data: [[161.2, 51.6], [167.5, 59.0], [159.5, 49.2], [157.0, 63.0], [155.8, 53.6],
 			                [170.0, 59.0], [159.1, 47.6], [166.0, 69.8], [176.2, 66.8], [160.2, 75.2],   
 			                [172.5, 55.2], [170.9, 54.2], [172.9, 62.5], [153.4, 42.0], [160.0, 50.0],   
 			                [147.2, 49.8], [168.2, 49.2], [175.0, 73.2], [157.0, 47.8], [167.6, 68.8],   
@@ -757,61 +1018,8 @@
 			                [174.0, 73.6], [162.6, 61.4], [174.0, 55.5], [162.6, 63.6], [161.3, 60.9],   
 			                [156.2, 60.0], [149.9, 46.8], [169.5, 57.3], [160.0, 64.1], [175.3, 63.6],   
 			                [169.5, 67.3], [160.0, 75.5], [172.7, 68.2], [162.6, 61.4], [157.5, 76.8],   
-			                [176.5, 71.8], [164.4, 55.5], [160.7, 48.6], [174.0, 66.4], [163.8, 67.3]]   
-			                                                                                             
-			        }, {                                                                                 
-			            name: 'Male',                                                                    
-			            color: 'rgba(119, 152, 191, .5)',                                                
-			            data: [[174.0, 65.6], [175.3, 71.8], [193.5, 80.7], [186.5, 72.6], [187.2, 78.8],
-			                [181.5, 74.8], [184.0, 86.4], [184.5, 78.4], [175.0, 62.0], [184.0, 81.6],   
-			                [180.0, 76.6], [177.8, 83.6], [192.0, 90.0], [176.0, 74.6], [174.0, 71.0],   
-			                [184.0, 79.6], [192.7, 93.8], [171.5, 70.0], [173.0, 72.4], [176.0, 85.9],   
-			                [176.0, 78.8], [180.5, 77.8], [172.7, 66.2], [176.0, 86.4], [173.5, 81.8],   
-			                [178.0, 89.6], [180.3, 82.8], [180.3, 76.4], [164.5, 63.2], [173.0, 60.9],   
-			                [183.5, 74.8], [175.5, 70.0], [188.0, 72.4], [189.2, 84.1], [172.8, 69.1],   
-			                [170.0, 59.5], [182.0, 67.2], [170.0, 61.3], [177.8, 68.6], [184.2, 80.1],   
-			                [186.7, 87.8], [171.4, 84.7], [172.7, 73.4], [175.3, 72.1], [180.3, 82.6],   
-			                [182.9, 88.7], [188.0, 84.1], [177.2, 94.1], [172.1, 74.9], [167.0, 59.1],   
-			                [169.5, 75.6], [174.0, 86.2], [172.7, 75.3], [182.2, 87.1], [164.1, 55.2],   
-			                [163.0, 57.0], [171.5, 61.4], [184.2, 76.8], [174.0, 86.8], [174.0, 72.2],   
-			                [177.0, 71.6], [186.0, 84.8], [167.0, 68.2], [171.8, 66.1], [182.0, 72.0],   
-			                [167.0, 64.6], [177.8, 74.8], [164.5, 70.0], [192.0, 101.6], [175.5, 63.2],  
-			                [171.2, 79.1], [181.6, 78.9], [167.4, 67.7], [181.1, 66.0], [177.0, 68.2],   
-			                [174.5, 63.9], [177.5, 72.0], [170.5, 56.8], [182.4, 74.5], [197.1, 90.9],   
-			                [180.1, 93.0], [175.5, 80.9], [180.6, 72.7], [184.4, 68.0], [175.5, 70.9],   
-			                [180.6, 72.5], [177.0, 72.5], [177.1, 83.4], [181.6, 75.5], [176.5, 73.0],   
-			                [175.0, 70.2], [174.0, 73.4], [165.1, 70.5], [177.0, 68.9], [192.0, 102.3],  
-			                [176.5, 68.4], [169.4, 65.9], [182.1, 75.7], [179.8, 84.5], [175.3, 87.7],   
-			                [184.9, 86.4], [177.3, 73.2], [167.4, 53.9], [178.1, 72.0], [168.9, 55.5],   
-			                [157.2, 58.4], [180.3, 83.2], [170.2, 72.7], [177.8, 64.1], [172.7, 72.3],   
-			                [165.1, 65.0], [186.7, 86.4], [165.1, 65.0], [174.0, 88.6], [175.3, 84.1],   
-			                [185.4, 66.8], [177.8, 75.5], [180.3, 93.2], [180.3, 82.7], [177.8, 58.0],   
-			                [177.8, 79.5], [177.8, 78.6], [177.8, 71.8], [177.8, 116.4], [163.8, 72.2],  
-			                [188.0, 83.6], [198.1, 85.5], [175.3, 90.9], [166.4, 85.9], [190.5, 89.1],   
-			                [166.4, 75.0], [177.8, 77.7], [179.7, 86.4], [172.7, 90.9], [190.5, 73.6],   
-			                [185.4, 76.4], [168.9, 69.1], [167.6, 84.5], [175.3, 64.5], [170.2, 69.1],   
-			                [190.5, 108.6], [177.8, 86.4], [190.5, 80.9], [177.8, 87.7], [184.2, 94.5],  
-			                [176.5, 80.2], [177.8, 72.0], [180.3, 71.4], [171.4, 72.7], [172.7, 84.1],   
-			                [172.7, 76.8], [177.8, 63.6], [177.8, 80.9], [182.9, 80.9], [170.2, 85.5],   
-			                [167.6, 68.6], [175.3, 67.7], [165.1, 66.4], [185.4, 102.3], [181.6, 70.5],  
-			                [172.7, 95.9], [190.5, 84.1], [179.1, 87.3], [175.3, 71.8], [170.2, 65.9],   
-			                [193.0, 95.9], [171.4, 91.4], [177.8, 81.8], [177.8, 96.8], [167.6, 69.1],   
-			                [167.6, 82.7], [180.3, 75.5], [182.9, 79.5], [176.5, 73.6], [186.7, 91.8],   
-			                [188.0, 84.1], [188.0, 85.9], [177.8, 81.8], [174.0, 82.5], [177.8, 80.5],   
-			                [171.4, 70.0], [185.4, 81.8], [185.4, 84.1], [188.0, 90.5], [188.0, 91.4],   
-			                [182.9, 89.1], [176.5, 85.0], [175.3, 69.1], [175.3, 73.6], [188.0, 80.5],   
-			                [188.0, 82.7], [175.3, 86.4], [170.5, 67.7], [179.1, 92.7], [177.8, 93.6],   
-			                [175.3, 70.9], [182.9, 75.0], [170.8, 93.2], [188.0, 93.2], [180.3, 77.7],   
-			                [177.8, 61.4], [185.4, 94.1], [168.9, 75.0], [185.4, 83.6], [180.3, 85.5],   
-			                [174.0, 73.9], [167.6, 66.8], [182.9, 87.3], [160.0, 72.3], [180.3, 88.6],   
-			                [167.6, 75.5], [186.7, 101.4], [175.3, 91.1], [175.3, 67.3], [175.9, 77.7],  
-			                [175.3, 81.8], [179.1, 75.5], [181.6, 84.5], [177.8, 76.6], [182.9, 85.0],   
-			                [177.8, 102.5], [184.2, 77.3], [179.1, 71.8], [176.5, 87.9], [188.0, 94.3],  
-			                [174.0, 70.9], [167.6, 64.5], [170.2, 77.3], [167.6, 72.3], [188.0, 87.3],   
-			                [174.0, 80.0], [176.5, 82.3], [180.3, 73.6], [167.6, 74.1], [188.0, 85.9],   
-			                [180.3, 73.2], [167.6, 76.3], [183.0, 65.9], [183.0, 90.9], [179.1, 89.1],   
-			                [170.2, 62.3], [177.8, 82.7], [179.1, 79.1], [190.5, 98.2], [177.8, 84.1],   
-			                [180.3, 83.2], [180.3, 83.2]]                                                
+			                [176.5, 71.8], [164.4, 55.5], [160.7, 48.6], [174.0, 66.4], [163.8, 67.3]] */
+			                data: yData
 			        }]                                
 			});
 			return chart;
@@ -828,8 +1036,90 @@
 				}
 			});
 		}
+		function deleteFormat(for_id){
+			//alert("for_id:"+for_id);
+			var pro_id = $("#pro_id").val();
+			$.ajax({  
+			      type: "POST",  
+			      url: "DeleteFormatServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "for_id": for_id
+			      },  
+			      success: function(data) {
+			    	  alert(data.ret);
+			    	  deviceTypeTable.api().ajax.reload();
+			    	  alert("刷新完毕");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      alert(XMLHttpRequest.status);//200
+                      alert(XMLHttpRequest.readyState);//4
+                      alert(textStatus);//parseerror
+                      //alert("error!");
+                  }
+			  });
+		}
+		function deleteDevice(dev_id){
+			$.get("AjaxServlet?flag=6&dev_id="+dev_id,function(data,status){
+				var obj = jQuery.parseJSON(data);
+				alert(obj.ret);
+				deviceTable.api().ajax.reload();
+				alert("刷新完毕");
+			});
+		}
 		function setChart(dev_id){
-			//显示dev_id数据表格
+			$("#dev_id_line").text(dev_id);
+			$("#dev_id_area").text(dev_id);
+			$("#dev_id_scatter").text(dev_id);
+			
+			$.ajax({  
+			      type: "POST",  
+			      url: "GetDeviceDataServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "dev_id": dev_id
+			      },  
+			      success: function(data) {
+			    	  //deviceDataTable table thead tr td..td 构建表格表头
+			    	  //alert(data.thead);
+			    	  $("#deviceDataTable thead").html(data.thead);
+			    	  //找到for_name+pro_id 为名的数据表，构建deviceDataTable tbody部分
+			    	  var line_num = data.tbody.split(",").length;
+			    	  var col_num = data.tbody.split(",")[0].split(":").length;
+			    	  for(var i=0;i<line_num-1;i++){
+			    		  var tr = "<tr>";
+			    		  var line = data.tbody.split(",")[i];
+			    		  for(var j=0;j<col_num-1;j++){
+			    			  tr+="<td>"+line.split(":")[j]+"</td>";
+			    		  }
+			    		  tr+="</tr>";
+			    		  $("#deviceDataTable tbody").append(tr);
+			    	  }
+			    	  
+			    	  //显示dev_name
+			    	  $("#dev_name_line").text(data.dev_name);
+			    	  $("#dev_name_area").text(data.dev_name);
+			    	  $("#dev_name_scatter").text(data.dev_name);
+			    	  //构建lineX,lineY中的option
+			    	  $("#lineX").html(data.optionList);
+			    	  $("#lineY").html(data.optionList);
+			    	  $("#areaX").html(data.optionList);
+			    	  $("#areaY").html(data.optionList);
+			    	  $("#scatterX").html(data.optionList);
+			    	  $("#scatterY").html(data.optionList);
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      alert(XMLHttpRequest.status);//200
+                      alert(XMLHttpRequest.readyState);//4
+                      alert(textStatus);//parseerror
+                      //alert("error!");
+                  }
+			  });
+			
 		}
 		function addVar(){
 			$('#varNumFormGroup1').after("");
