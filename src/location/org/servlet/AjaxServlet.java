@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import location.org.api.ParseLonLat;
+import location.org.dao.AdminDao;
+import location.org.dao.AdminDaoImpl;
 import location.org.dao.Basedata;
 import location.org.dao.BasedataDao;
 import location.org.dao.BasedataDaoImpl;
@@ -60,16 +62,17 @@ public class AjaxServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		String flag = request.getParameter("flag");
-		String username = request.getParameter("username");
+		/*String username = request.getParameter("username");
 		if(username != null && !username.equals("")){
 			username = username.trim();
-		}
+		}*/
 		//System.out.println(flag);
 		//System.out.println("ajax:"+username);
 		//1--处理projectTable数据请求
 		if(flag.equals("1")){
+			int u_id = (Integer)request.getSession().getAttribute("u_id");
 			ProjectDao projectdao = new ProjectDaoImpl();
-			List<Project> projectList = projectdao.findProject(username);
+			List<Project> projectList = projectdao.findProject(u_id);
 			JSONObject obj = new JSONObject();
 			obj.put("aaData", projectList);
 			//System.out.println("ajax:"+obj.toString());
@@ -124,6 +127,14 @@ public class AjaxServlet extends HttpServlet {
 			}else{
 				obj.put("ret", "error!");
 			}
+			response.getWriter().println(obj.toString());
+		//7--admin role by u_id pro_id
+		}else if(flag.equals("7")){
+			JSONObject obj = new JSONObject();
+			int u_id = Integer.parseInt(request.getParameter("u_id"));
+			int pro_id = Integer.parseInt(request.getParameter("pro_id"));
+			AdminDao admindao = new AdminDaoImpl();
+			obj.put("ret", admindao.findRole(u_id,pro_id));
 			response.getWriter().println(obj.toString());
 		//3--获取basedata折线图数据的请求
 		}else if(flag.equals("5")){

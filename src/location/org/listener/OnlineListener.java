@@ -59,7 +59,7 @@ public class OnlineListener implements HttpSessionListener, HttpSessionAttribute
     	ServletContext application = session.getServletContext();
     	String sessionId = session.getId();
     	//if (session.isNew()){
-    		String user = (String)session.getAttribute("username");
+    		String user = (String)session.getAttribute("u_name");
     		Map<String,String> online = (Map<String,String>) application.getAttribute("online");
     		if(online == null){
     			online = new Hashtable<String,String>();
@@ -87,7 +87,7 @@ public class OnlineListener implements HttpSessionListener, HttpSessionAttribute
     	String sessionId = session.getId();
     	//if (session.isNew()){
     		System.out.println("test");
-    		String user = (String)session.getAttribute("username");
+    		String user = (String)session.getAttribute("u_name");
     		Map<String,String> online = (Map<String,String>) application.getAttribute("online");
     		if(online == null){
     			online = new Hashtable<String,String>();

@@ -27,16 +27,15 @@
 							<th>项目ID</th>
 							<th>项目名称</th>
 							<th>描述信息</th>
+							<!--  <th>权限</th> -->
 							<th>操作</th>
 					</thead>
 					<tbody></tbody>
 		</table>
-		<%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
 		<!-- Button trigger modal -->
 		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProjectModal">
 		  添加项目
 		</button>
-		<%} %>
 	</div>
 
 
@@ -58,7 +57,6 @@
 		    <label class="control-label" for="username">项目描述</label>
 		    <input type="text" class="form-control" id="projectInfo" name="projectInfo" placeholder="项目描述">
 		  </div>
-		
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -77,11 +75,11 @@
 		});
 		
 		function initProjectTable(){
-			var username = $('#u_name').text();
+			var u_name = $('#u_name').text();
 			console.log('initProjectTable');
-			console.log(username);
+			//console.log(username);
 			var table = $('#projectTable').dataTable({
- 				"sAjaxSource": "AjaxServlet?flag=1&username="+username,
+ 				"sAjaxSource": "AjaxServlet?flag=1",
  				"bDestroy": true,
  				"bRetrieve": true,
  				"bProcessing": true,

@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import location.org.dao.AdminDao;
+import location.org.dao.AdminDaoImpl;
 import location.org.dao.Project;
 import location.org.dao.ProjectDao;
 import location.org.dao.ProjectDaoImpl;
@@ -37,7 +39,8 @@ public class AddProjectServlet extends HttpServlet {
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		String projectName = request.getParameter("projectName");
 		String projectInfo = request.getParameter("projectInfo");
-		String username = (String) request.getSession().getAttribute("username");
+		//String u_name = (String) request.getSession().getAttribute("u_name");
+		int u_id = (Integer) request.getSession().getAttribute("u_id");
 		//String s = request.getParameter("identity");
 		
 		if(projectName == null || projectName.equals("")){
@@ -53,14 +56,18 @@ public class AddProjectServlet extends HttpServlet {
 			return;
 		}
 		ProjectDao pdao = new ProjectDaoImpl();
-		if(pdao.findProjectName(projectName)){
+		if(pdao.findProjectName(projectName) != null){
 			//response.sendRedirect("login.jsp?error=invalid username and password");
 			request.setAttribute("error", "项目名已存在！");
 			request.getRequestDispatcher("project.jsp").forward(request, response);
 			return;
 		}
-		Project tmp = new Project(0,projectName,projectInfo,username);
+		Project tmp = new Project(0,projectName,projectInfo);
 		pdao.insertProject(tmp);
+		int pro_id = pdao.findProjectName(projectName).getPro_id();
+		
+		AdminDao admindao = new AdminDaoImpl();
+		admindao.insertAdmin(u_id, pro_id, 0);
 		request.setAttribute("tip", "插入成功！");
 		request.getRequestDispatcher("project.jsp").forward(request, response);
 

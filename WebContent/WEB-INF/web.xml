@@ -100,6 +100,14 @@
     <servlet-name>adddevice</servlet-name>
     <url-pattern>/AddDeviceServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>adduser</servlet-name>
+    <servlet-class>location.org.servlet.AddUserServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>adduser</servlet-name>
+    <url-pattern>/AddUserServlet</url-pattern>
+  </servlet-mapping>
   <filter>
     <filter-name>authority</filter-name>
     <filter-class>location.org.filter.AuthorityFilter</filter-class>

@@ -14,7 +14,7 @@ public class DbUtils {
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://localhost:3306/bigdataplatform";
 			String user = "root";
-			String password = "";
+			String password = "root";
 			conn = DriverManager.getConnection(url,user,password);
 			System.out.println("ok"+conn);
 		}catch(ClassNotFoundException e){

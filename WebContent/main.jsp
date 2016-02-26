@@ -36,7 +36,9 @@
 		    	<ul class="nav navbar-nav navbar-right">
 		    		<li><p class="navbar-text">您好！</p></li>
 			    	<li><p class="navbar-text" id="u_name">
-			    	<%= request.getSession().getAttribute("username") %></p></li>
+			    	<%= request.getSession().getAttribute("u_name") %></p></li>
+			    	<li><p class="navbar-text" id="u_id" style="">
+			    	<%= request.getSession().getAttribute("u_id") %></p></li>
 			    	<li><a href="./ExitServlet">退出</a></li>
 		    	</ul>
 		    </div>

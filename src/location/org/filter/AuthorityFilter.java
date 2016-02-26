@@ -49,7 +49,7 @@ public class AuthorityFilter implements Filter {
 		HttpSession session = reque.getSession();
 		
 		String requestPath = reque.getServletPath();
-		if(session.getAttribute("username") == null
+		if(session.getAttribute("u_id") == null
 				&& !requestPath.endsWith(loginPage)
 				&& !requestPath.endsWith(registerPage)
 				&& !requestPath.endsWith(loginServlet)

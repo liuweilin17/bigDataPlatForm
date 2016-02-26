@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import location.org.dao.User;
 import location.org.dao.UserDao;
 import location.org.dao.UserDaoImpl;
 
@@ -42,9 +43,7 @@ public class LoginServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		int role = Integer.parseInt(request.getParameter("userRole"));
-		
-		//String s = request.getParameter("identity");
+		//int role = Integer.parseInt(request.getParameter("userRole"));
 		
 		if(username == null || username.equals("")){
 			//response.sendRedirect("login.jsp?error=empty username");
@@ -59,16 +58,18 @@ public class LoginServlet extends HttpServlet {
 			return;
 		}
 		UserDao udao = new UserDaoImpl();
-		if(!udao.findUser(username, password, role)){
+		User user = udao.findUser(username, password);
+		if(user==null){
 			//response.sendRedirect("login.jsp?error=invalid username and password");
 			request.setAttribute("error", "用户名或密码不存在！！");
 			request.getRequestDispatcher("login.jsp").forward(request, response);
 			return;
 		}
 		HttpSession session = request.getSession();
-		session.setAttribute("username", username);
-		session.setAttribute("password", password);
-		session.setAttribute("userRole", role);
+		session.setAttribute("u_name",user.getU_name() );
+		session.setAttribute("u_id", user.getU_id());
+		System.out.println("u_id:"+user.getU_id());
+		//session.setAttribute("userRole", role);
 		
 		request.getRequestDispatcher("project.jsp").forward(request, response);
 	}

@@ -64,7 +64,7 @@ public class RegisterServlet extends HttpServlet {
 			request.getRequestDispatcher("register.jsp").forward(request, response);
 			return;
 		}
-		User tmp = new User(username,password,2);
+		User tmp = new User(username,password);
 		udao.insertUser(tmp);
 		request.setAttribute("tip", "×¢²á³É¹¦£¡");
 		request.getRequestDispatcher("login.jsp").forward(request, response);

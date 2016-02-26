@@ -20,9 +20,8 @@
 	      <li role="presentation" class="active"><a href="#devicePage" id="device-tab" role="tab" data-toggle="tab" aria-controls="devicePage" aria-expanded="true">设备管理</a></li>
 	      <li role="presentation"><a href="#displayPage" role="tab" id="display-tab" data-toggle="tab" aria-controls="displayPage">数据展示</a></li>
 	      <li role="presentation"><a href="#warningPage" role="tab" id="warning-tab" data-toggle="tab" aria-controls="warningPage">预警</a></li>
-	      <%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
-	      <li role="presentation"><a href="#setPage" role="tab" id="set-tab" data-toggle="tab" aria-controls="setPage">设置</a></li>
-	      <%} %>
+	      <!-- admin -->
+	      <li role="presentation" id="admin1"><a href="#setPage" role="tab" id="set-tab" data-toggle="tab" aria-controls="setPage">设置</a></li>
 	    </ul>
     </div>
     <div class="col-md-10">
@@ -32,13 +31,13 @@
 	     
 		      <ul class="nav nav-tabs" role="tablist">
 			    <li role="presentation" class="active"><a href="#deviceTypePage" aria-controls="deviceTypePage" role="tab" data-toggle="tab">查看设备类型</a></li>
-			    <%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
-			    <li role="presentation"><a href="#addDeviceTypePage" aria-controls="addDeviceTypePage" role="tab" data-toggle="tab">添加设备类型</a></li>
-			    <%} %>
+			    <!-- admin -->
+			    <li role="presentation" id="admin2"><a href="#addDeviceTypePage" aria-controls="addDeviceTypePage" role="tab" data-toggle="tab">添加设备类型</a></li>
+			    
 			    <li role="presentation"><a href="#deviceInstancePage" aria-controls="deviceInstancePage" role="tab" data-toggle="tab">查看设备信息</a></li>
-			    <%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
-			    <li role="presentation"><a href="#addDeviceInstancePage" aria-controls="addDeviceInstancePage" role="tab" data-toggle="tab">添加设备</a></li>
-			    <%} %>
+			    <!-- admin -->
+			    <li role="presentation" id="admin3"><a href="#addDeviceInstancePage" aria-controls="addDeviceInstancePage" role="tab" data-toggle="tab">添加设备</a></li>
+			    
 			  </ul>
 		
 			  <!-- Tab panes -->
@@ -313,8 +312,7 @@
 	      
 	      <!-- set page -->
 	      <div role="tabpanel" class="tab-pane fade" id="setPage" aria-labelledBy="set-tab">
-	        <form class="form-horizontal" style="margin-top:20px" 
-		action="RegisterServlet" method="POST">
+	        <div class="form-horizontal" style="margin-top:20px">
 		  <div class="form-group" style="margin-top:20px">
 		    <label for="username" class="col-sm-2 control-label">用户名</label>
 		    <div class="col-sm-5">
@@ -322,26 +320,18 @@
 		    </div>
 		  </div>
 		  <div class="form-group">
-		    <label for="password" class="col-sm-2 control-label">密码</label>
-		    <div class="col-sm-5">
-		      <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button id="addUserBtn" class="btn btn-success">添加</button>
 		    </div>
 		  </div>
+		  
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button type="submit" class="btn btn-success">添加</button>
+		     	<p class="text-danger" id="addUserError"></p> 
 		    </div>
 		  </div>
-		  <%if (request.getAttribute("error")!=null){ %>
-		  <div class="form-group">
-		    <div class="col-sm-offset-2 col-sm-10">
-		     	<p class="text-danger">
-		     		<%=request.getAttribute("error") %>
-		     	</p> 
-		    </div>
-		  </div>
-		  <%} %>
-		</form>
+		  
+		</div><!-- form -->
 	      </div>
 	      <!-- set page end-->
 	    </div>
@@ -547,6 +537,39 @@
 			}
 			
 		});
+		$("#addUserBtn").click(function(){
+			$("#addUserError"),text("");
+			var pro_id = $("#pro_id").text();
+			var username = $("input[name='username']").val();
+			//检查设备名
+			if(username == "" || username == null){
+				$("#addUserError").text("用户名不能为空！");
+				return;
+			}
+			//访问服务器，判断device有效性，插入device数据库，返回信息
+			$.ajax({  
+			      type: "POST",  
+			      url: "AddUserServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: { 
+			          "pro_id": pro_id,
+			          "role": 0
+			      },  
+			      success: function(data) {
+			    	  alert(data.ret);
+			    	  deviceTable.api().ajax.reload();
+			    	  alert("刷新完毕");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      //alert(XMLHttpRequest.status);//200
+                      //alert(XMLHttpRequest.readyState);//4
+                      //alert(textStatus);//parseerror
+                      alert("error!");
+                  }
+			  });
+		});
 		function initTypeList(n){
 			$.get("AjaxServlet?flag=5",function(data,status){
 				var obj = jQuery.parseJSON(data);
@@ -578,6 +601,33 @@
 					$("select[id='deviceType']").append("<option>"+obj.aaData[i].for_name+"</option>");
 				}
 			});
+			
+		}
+		function initRole(){
+			alert("u_id:"+$("#u_id").text().trim());
+			alert("pro_id:"+$("#pro_id").text());
+			$.ajax({  
+			      type: "POST",  
+			      url: "AjaxServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "flag": "7",  
+			          "u_id":  $("#u_id").text().trim(),
+			          "pro_id": $("#pro_id").text()
+			      },  
+			      success: function(data) {
+			    	  //alert("success");
+			    	  alert("role:"+data.ret);
+			    	  if(data.ret == 1){
+				    	  $("#admin1").css('display','none');
+				    	  $("#admin2").css('display','none');
+				    	  $("#admin3").css('display','none');
+			    	  }
+			      }  
+			  });
+			
 		}
 		$(document).ready(function(){
 			deviceTable = initDeviceTable();
@@ -585,6 +635,7 @@
 			displayTable = initDisplayTable();
 			//scatterChart = initScatterChart();
 			initSelect();
+			initRole();
 		});
 		$("#lineBtn").click(function(){
 			var dev_name = $("#dev_name_line").text();
@@ -690,7 +741,7 @@
 		});
 		function getFormatName(nTd,oData){
 			$.ajax({  
-				      type: "GET",  
+				      type: "POST",  
 				      url: "AjaxServlet",
 				      async: true,
 				      dataType: "json",  
@@ -1025,16 +1076,28 @@
 			return chart;
 		}
 		function showFormat(for_id){
-			$.get("AjaxServlet?flag=4&for_id="+for_id,function(data,status){
-				var obj = jQuery.parseJSON(data);
-				name_array = (obj.data.for_namelist).split(',');
-				type_array = (obj.data.for_typelist).split(',');
-				$('#deviceTypeDetailTbody').html("");
-				$('#deviceTypeDetailHeading').html(obj.data.for_name);
-				for(i in name_array){
-					$('#deviceTypeDetailTbody').append("<tr><td>"+name_array[i]+"</td><td>"+type_array[i]+"</td></tr>");
-				}
-			});
+			$.ajax({  
+			      type: "POST",  
+			      url: "AjaxServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "flag": "4",  
+			          "for_id": for_id    
+			      },  
+			      success: function(data) {
+			    	  //alert("success");
+			    	  var obj = jQuery.parseJSON(data);
+						name_array = (obj.data.for_namelist).split(',');
+						type_array = (obj.data.for_typelist).split(',');
+						$('#deviceTypeDetailTbody').html("");
+						$('#deviceTypeDetailHeading').html(obj.data.for_name);
+						for(i in name_array){
+							$('#deviceTypeDetailTbody').append("<tr><td>"+name_array[i]+"</td><td>"+type_array[i]+"</td></tr>");
+						}
+			      }  
+			  });
 		}
 		function deleteFormat(for_id){
 			//alert("for_id:"+for_id);
@@ -1062,12 +1125,35 @@
 			  });
 		}
 		function deleteDevice(dev_id){
-			$.get("AjaxServlet?flag=6&dev_id="+dev_id,function(data,status){
+			/*$.get("AjaxServlet?flag=6&dev_id="+dev_id,function(data,status){
 				var obj = jQuery.parseJSON(data);
 				alert(obj.ret);
 				deviceTable.api().ajax.reload();
 				alert("刷新完毕");
-			});
+			});*/
+			$.ajax({  
+			      type: "POST",  
+			      url: "AjaxServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {
+		      		  "flag": 6,
+			          "dev_id": dev_id
+			      },  
+			      success: function(data) {
+			    	  //var obj = jQuery.parseJSON(data);
+						alert(obj.ret);
+						deviceTable.api().ajax.reload();
+						alert("刷新完毕");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);//200
+                    alert(XMLHttpRequest.readyState);//4
+                    alert(textStatus);//parseerror
+                    //alert("error!");
+                }
+			  });
 		}
 		function setChart(dev_id){
 			$("#dev_id_line").text(dev_id);
