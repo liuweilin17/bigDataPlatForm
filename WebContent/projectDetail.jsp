@@ -604,8 +604,8 @@
 			
 		}
 		function initRole(){
-			alert("u_id:"+$("#u_id").text().trim());
-			alert("pro_id:"+$("#pro_id").text());
+			//alert("u_id:"+$("#u_id").text().trim());
+			//alert("pro_id:"+$("#pro_id").text());
 			$.ajax({  
 			      type: "POST",  
 			      url: "AjaxServlet",
@@ -619,7 +619,7 @@
 			      },  
 			      success: function(data) {
 			    	  //alert("success");
-			    	  alert("role:"+data.ret);
+			    	  //alert("role:"+data.ret);
 			    	  if(data.ret == 1){
 				    	  $("#admin1").css('display','none');
 				    	  $("#admin2").css('display','none');
@@ -1088,11 +1088,10 @@
 			      },  
 			      success: function(data) {
 			    	  //alert("success");
-			    	  var obj = jQuery.parseJSON(data);
-						name_array = (obj.data.for_namelist).split(',');
-						type_array = (obj.data.for_typelist).split(',');
+						name_array = (data.data.for_namelist).split(',');
+						type_array = (data.data.for_typelist).split(',');
 						$('#deviceTypeDetailTbody').html("");
-						$('#deviceTypeDetailHeading').html(obj.data.for_name);
+						$('#deviceTypeDetailHeading').html(data.data.for_name);
 						for(i in name_array){
 							$('#deviceTypeDetailTbody').append("<tr><td>"+name_array[i]+"</td><td>"+type_array[i]+"</td></tr>");
 						}
@@ -1159,7 +1158,8 @@
 			$("#dev_id_line").text(dev_id);
 			$("#dev_id_area").text(dev_id);
 			$("#dev_id_scatter").text(dev_id);
-			
+			$("#deviceDataTable thead").html("");
+			$("#deviceDataTable tbody").html("");
 			$.ajax({  
 			      type: "POST",  
 			      url: "GetDeviceDataServlet",

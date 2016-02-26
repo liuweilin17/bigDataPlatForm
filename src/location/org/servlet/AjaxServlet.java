@@ -109,6 +109,7 @@ public class AjaxServlet extends HttpServlet {
 			//System.out.println(format.getFor_name());
 			JSONObject obj = new JSONObject();
 			obj.put("data", format);
+			System.out.println("obj:"+obj.toString());
 			response.getWriter().println(obj.toString());
 		//5--返回系统中变量类型列表
 		}else if(flag.equals("5")){
