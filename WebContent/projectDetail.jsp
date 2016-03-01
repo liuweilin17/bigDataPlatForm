@@ -339,6 +339,15 @@
 	<script>
 		var deviceTable;
 		var deviceTypeTable;
+		$(document).ready(function(){
+			deviceTable = initDeviceTable();
+			deviceTypeTable = initDeviceTypeTable();
+			displayTable = initDisplayTable();
+			//scatterChart = initScatterChart();
+			initSelect();
+			initRole();
+		});
+		
 		$("#but").click(function(){
             var _len = $("#formatTable tbody tr").length;        
             $("#formatTable tbody").append("<tr id="+_len+">"
@@ -445,6 +454,7 @@
 			    	  //dataTable(){}返回一个jQuery,DataTable(){}返回一个api对象,前者可能出现有的函数是用不了。
 			    	  //使用api()将jQuery对象转化为api对象
 			    	  deviceTypeTable.api().ajax.reload();
+			    	  initSelect();
 			    	  alert("刷新完毕");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -485,6 +495,7 @@
 				      },  
 				      success: function(data) {
 				    	  alert(data.ret);
+				    	  displayTable.api().ajax.reload();
 				    	  deviceTable.api().ajax.reload();
 				    	  alert("刷新完毕");
 				      },
@@ -597,6 +608,7 @@
 			$.get("AjaxServlet?flag=3&pro_id="+pro_id,function(data,status){
 				var obj = jQuery.parseJSON(data);
 				var len = obj.aaData.length;
+				$("select[id='deviceType']").html("");
 				for(var i = 0;i<len;i++){
 					$("select[id='deviceType']").append("<option>"+obj.aaData[i].for_name+"</option>");
 				}
@@ -629,14 +641,7 @@
 			  });
 			
 		}
-		$(document).ready(function(){
-			deviceTable = initDeviceTable();
-			deviceTypeTable = initDeviceTypeTable();
-			displayTable = initDisplayTable();
-			//scatterChart = initScatterChart();
-			initSelect();
-			initRole();
-		});
+
 		$("#lineBtn").click(function(){
 			var dev_name = $("#dev_name_line").text();
 			var dev_id = $("#dev_id_line").text();
@@ -657,9 +662,9 @@
 			          "yName": yName
 			      },  
 			      success: function(data) {
-			    	  alert("begin initLineChart!");
+			    	  //alert("begin initLineChart!");
 			    	  initLineChart(dev_name,xName,yName,data.xData,data.yData);
-			    	  alert("end initLineChart!");
+			    	  //alert("end initLineChart!");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    	alert("error!");
@@ -691,9 +696,9 @@
 			          "yName": yName
 			      },  
 			      success: function(data) {
-			    	  alert("begin initAreaChart!");
+			    	  //alert("begin initAreaChart!");
 			    	  initAreaChart(dev_name,xName,yName,data.xData,data.yData);
-			    	  alert("end initAreaChart!");
+			    	  //alert("end initAreaChart!");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    	alert("error!");
@@ -725,9 +730,9 @@
 			          "yName": yName
 			      },  
 			      success: function(data) {
-			    	  alert("begin initScatterChart!");
+			    	  //alert("begin initScatterChart!");
 			    	  initScatterChart(dev_name,xName,yName,data.xData,data.yData);
-			    	  alert("end initScatterChart!");
+			    	  //alert("end initScatterChart!");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    	alert("error!");
@@ -1113,6 +1118,7 @@
 			      success: function(data) {
 			    	  alert(data.ret);
 			    	  deviceTypeTable.api().ajax.reload();
+			    	  initSelect();
 			    	  alert("刷新完毕");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -1142,7 +1148,8 @@
 			      },  
 			      success: function(data) {
 			    	  //var obj = jQuery.parseJSON(data);
-						alert(obj.ret);
+						//alert(obj.ret);
+						displayTable.api().ajax.reload();
 						deviceTable.api().ajax.reload();
 						alert("刷新完毕");
 			      },

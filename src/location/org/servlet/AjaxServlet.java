@@ -17,12 +17,6 @@ import javax.servlet.http.HttpSession;
 import location.org.api.ParseLonLat;
 import location.org.dao.AdminDao;
 import location.org.dao.AdminDaoImpl;
-import location.org.dao.Basedata;
-import location.org.dao.BasedataDao;
-import location.org.dao.BasedataDaoImpl;
-import location.org.dao.Baseline;
-import location.org.dao.BaselineDao;
-import location.org.dao.BaselineDaoImpl;
 import location.org.dao.Device;
 import location.org.dao.DeviceDao;
 import location.org.dao.DeviceDaoImpl;
@@ -62,12 +56,6 @@ public class AjaxServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		String flag = request.getParameter("flag");
-		/*String username = request.getParameter("username");
-		if(username != null && !username.equals("")){
-			username = username.trim();
-		}*/
-		//System.out.println(flag);
-		//System.out.println("ajax:"+username);
 		//1--处理projectTable数据请求
 		if(flag.equals("1")){
 			int u_id = (Integer)request.getSession().getAttribute("u_id");
@@ -97,12 +85,6 @@ public class AjaxServlet extends HttpServlet {
 			response.getWriter().println(obj.toString());
 		//4--返回指定for_id的format
 		}else if(flag.equals("4")){
-			/*int for_id = Integer.parseInt((String)request.getParameter("for_id"));
-			FormatDao formatdao = new FormatDaoImpl();
-			List<Format> formatList = formatdao.findFormat(for_id);
-			JSONObject obj = new JSONObject();
-			obj.put("data", formatList);
-			response.getWriter().println(obj.toString());*/
 			int for_id = Integer.parseInt((String)request.getParameter("for_id"));
 			FormatDao formatdao = new FormatDaoImpl();
 			Format format = formatdao.findFormatById(for_id);
@@ -137,43 +119,6 @@ public class AjaxServlet extends HttpServlet {
 			AdminDao admindao = new AdminDaoImpl();
 			obj.put("ret", admindao.findRole(u_id,pro_id));
 			response.getWriter().println(obj.toString());
-		//3--获取basedata折线图数据的请求
-		}else if(flag.equals("5")){
-			double bl_id = Double.parseDouble((String)request.getParameter("bl_id"));
-			ParseLonLat parselonlat = new ParseLonLat();
-			BasedataDao basedatadao = new BasedataDaoImpl();
-			List<Basedata> basedataList = basedatadao.findBasedata(bl_id);
-			List<String> timeList = new LinkedList<String>();
-			List<Double> latList = new LinkedList<Double>();
-			List<Double> lonList = new LinkedList<Double>();
-			List<Double> xList = new LinkedList<Double>();
-			List<Double> yList = new LinkedList<Double>();
-			List<Double> zList = new LinkedList<Double>();
-			System.out.println("f1");
-			for(int i = 0;i<basedataList.size();i++){
-				timeList.add(basedataList.get(i).getB_time());
-				
-				lonList.add(parselonlat.parseToDouble(basedataList.get(i).getB_lon()));
-				latList.add(parselonlat.parseToDouble(basedataList.get(i).getB_lat()));
-				
-				xList.add(basedataList.get(i).getB_x());
-				yList.add(basedataList.get(i).getB_y());
-				zList.add(basedataList.get(i).getB_z());
-			}
-			JSONObject obj = new JSONObject();
-			obj.put("timeList", timeList);
-			obj.put("lonList", lonList);
-			obj.put("latList", latList);
-			obj.put("xList", xList);
-			obj.put("yList", yList);
-			obj.put("zList", zList);
-			response.getWriter().println(obj.toString());
-		//4--删除指定bl_id的baseline和basedata数据
-		}else if(flag.equals("6")){
-			double bl_id = Double.parseDouble((String)request.getParameter("bl_id"));
-			BasedataDao basedatadao = new BasedataDaoImpl();
-			basedatadao.deleteBasedata(bl_id);
-			request.getRequestDispatcher("siteInfo.jsp").forward(request, response);
 		}else {
 			
 		}
