@@ -6,6 +6,6 @@ public interface UserDao {
 	//void findUserById(int id);
 	//void findUserByName(int name);
 	User findUser(String username, String password);
-	boolean findUsername(String username);
+	User findUsername(String username);
 	//List<User> getAllUses(String[] params);
 }

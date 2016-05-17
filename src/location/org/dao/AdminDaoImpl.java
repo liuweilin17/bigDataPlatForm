@@ -47,7 +47,7 @@ public class AdminDaoImpl implements AdminDao {
 		PreparedStatement pstmt = null;
 		try{
 			conn = DbUtils.getConnection();
-			String sql = "insert into admin(u_id,pro_id,int role) values(?,?)";
+			String sql = "insert into admin(u_id,pro_id,role) values(?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, u_id);
 			pstmt.setInt(2, pro_id);

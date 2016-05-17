@@ -44,6 +44,7 @@ public class AuthorityFilter implements Filter {
 		String registerPage = config.getInitParameter("registerPage");
 		String loginServlet = config.getInitParameter("loginServlet");
 		request.setCharacterEncoding(encoding);
+		response.setCharacterEncoding(encoding);
 		
 		HttpServletRequest reque = (HttpServletRequest) request;
 		HttpSession session = reque.getSession();

@@ -69,14 +69,6 @@
     <url-pattern>/GetDeviceChartServlet</url-pattern>
   </servlet-mapping>
   <servlet>
-    <servlet-name>basedata</servlet-name>
-    <servlet-class>location.org.servlet.BasedataServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>basedata</servlet-name>
-    <url-pattern>/BasedataServlet</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <servlet-name>addformat</servlet-name>
     <servlet-class>location.org.servlet.AddFormatServlet</servlet-class>
   </servlet>
@@ -107,6 +99,14 @@
   <servlet-mapping>
     <servlet-name>adduser</servlet-name>
     <url-pattern>/AddUserServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>receivedata</servlet-name>
+    <servlet-class>location.org.servlet.ReceiveData</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>receivedata</servlet-name>
+    <url-pattern>/ReceiveData</url-pattern>
   </servlet-mapping>
   <filter>
     <filter-name>authority</filter-name>

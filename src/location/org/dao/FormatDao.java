@@ -10,4 +10,5 @@ public interface FormatDao {
 	Format findFormatById(int for_id);
 	Format findFormatByNameProject(String for_name,int pro_id);
 	String findTypeByName(int for_id,String name);
+	
 }

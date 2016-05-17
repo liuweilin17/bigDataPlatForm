@@ -65,12 +65,12 @@ public class UserDaoImpl implements UserDao{
 	}
 
 	@Override
-	public boolean findUsername(String username) {
+	public User findUsername(String username) {
 		// TODO Auto-generated method stub
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		boolean flag = false;
+		User user = null;
 		try{
 			conn = DbUtils.getConnection();
 			String sql = "select * from user where u_name=?";
@@ -78,10 +78,7 @@ public class UserDaoImpl implements UserDao{
 			pstmt.setString(1, username);
 			rs = pstmt.executeQuery();
 			if(rs.next()){
-				flag= true;
-			}
-			else{
-				flag = false;
+				user = new User(rs.getInt("u_id"),rs.getString("u_name"),rs.getString("u_password"));
 			}
 		}catch(SQLException e){
 			e.printStackTrace();
@@ -90,7 +87,7 @@ public class UserDaoImpl implements UserDao{
 			DbUtils.closeStatement(pstmt);
 			DbUtils.closeConnection();
 		}
-		return flag;
+		return user;
 		
 	}
 	
