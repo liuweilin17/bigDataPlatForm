@@ -37,16 +37,16 @@
 		  </div>
 		  <div class="form-group">
 		  	<div class="col-sm-offset-2 col-sm-10">
-<!-- 		  		<label class="radio-inline">
-					<input type="radio" name="userRole" id="superRole" value="0"> 超级管理员
-				</label> -->
-		  		<label class="radio-inline">
-					<input type="radio" name="userRole" id="adminRole" value="1"> 管理员
-				</label>
-				<label class="radio-inline">
-				  <input type="radio" name="userRole" id="ordinaryRole" value="2" checked> 普通用户
-				</label>
-		  		<!-- <p>未注册？请 <a href="./register.jsp">注册</a></p> -->
+<!--  		  		<label class="radio-inline"> -->
+<!-- 					<input type="radio" name="userRole" id="superRole" value="0"> 超级管理员 -->
+<!-- 				</label> -->
+<!-- 		  		<label class="radio-inline"> -->
+<!-- 					<input type="radio" name="userRole" id="adminRole" value="1"> 管理员 -->
+<!-- 				</label> -->
+<!-- 				<label class="radio-inline"> -->
+<!-- 				  <input type="radio" name="userRole" id="ordinaryRole" value="2" checked> 普通用户 -->
+<!-- 				</label> -->
+		  		<p>未注册？请 <a href="./register.jsp">注册</a></p>
 		  	</div>
 		  </div>
 		  <div class="form-group">

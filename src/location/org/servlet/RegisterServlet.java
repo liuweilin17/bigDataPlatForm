@@ -58,13 +58,14 @@ public class RegisterServlet extends HttpServlet {
 			return;
 		}
 		UserDao udao = new UserDaoImpl();
-		if(udao.findUsername(username)){
+		User user = udao.findUsername(username);
+		if(user != null){
 			//response.sendRedirect("login.jsp?error=invalid username and password");
 			request.setAttribute("error", "用户名已存在！");
 			request.getRequestDispatcher("register.jsp").forward(request, response);
 			return;
 		}
-		User tmp = new User(username,password,2);
+		User tmp = new User(username,password);
 		udao.insertUser(tmp);
 		request.setAttribute("tip", "注册成功！");
 		request.getRequestDispatcher("login.jsp").forward(request, response);

@@ -44,12 +44,13 @@ public class AuthorityFilter implements Filter {
 		String registerPage = config.getInitParameter("registerPage");
 		String loginServlet = config.getInitParameter("loginServlet");
 		request.setCharacterEncoding(encoding);
+		response.setCharacterEncoding(encoding);
 		
 		HttpServletRequest reque = (HttpServletRequest) request;
 		HttpSession session = reque.getSession();
 		
 		String requestPath = reque.getServletPath();
-		if(session.getAttribute("username") == null
+		if(session.getAttribute("u_id") == null
 				&& !requestPath.endsWith(loginPage)
 				&& !requestPath.endsWith(registerPage)
 				&& !requestPath.endsWith(loginServlet)

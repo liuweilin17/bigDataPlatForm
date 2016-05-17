@@ -20,9 +20,8 @@
 	      <li role="presentation" class="active"><a href="#devicePage" id="device-tab" role="tab" data-toggle="tab" aria-controls="devicePage" aria-expanded="true">设备管理</a></li>
 	      <li role="presentation"><a href="#displayPage" role="tab" id="display-tab" data-toggle="tab" aria-controls="displayPage">数据展示</a></li>
 	      <li role="presentation"><a href="#warningPage" role="tab" id="warning-tab" data-toggle="tab" aria-controls="warningPage">预警</a></li>
-	      <%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
-	      <li role="presentation"><a href="#setPage" role="tab" id="set-tab" data-toggle="tab" aria-controls="setPage">设置</a></li>
-	      <%} %>
+	      <!-- admin -->
+	      <li role="presentation" id="admin1"><a href="#setPage" role="tab" id="set-tab" data-toggle="tab" aria-controls="setPage">设置</a></li>
 	    </ul>
     </div>
     <div class="col-md-10">
@@ -32,13 +31,13 @@
 	     
 		      <ul class="nav nav-tabs" role="tablist">
 			    <li role="presentation" class="active"><a href="#deviceTypePage" aria-controls="deviceTypePage" role="tab" data-toggle="tab">查看设备类型</a></li>
-			    <%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
-			    <li role="presentation"><a href="#addDeviceTypePage" aria-controls="addDeviceTypePage" role="tab" data-toggle="tab">添加设备类型</a></li>
-			    <%} %>
+			    <!-- admin -->
+			    <li role="presentation" id="admin2"><a href="#addDeviceTypePage" aria-controls="addDeviceTypePage" role="tab" data-toggle="tab">添加设备类型</a></li>
+			    
 			    <li role="presentation"><a href="#deviceInstancePage" aria-controls="deviceInstancePage" role="tab" data-toggle="tab">查看设备信息</a></li>
-			    <%if(request.getSession().getAttribute("userRole").toString().equals("1")) {%>
-			    <li role="presentation"><a href="#addDeviceInstancePage" aria-controls="addDeviceInstancePage" role="tab" data-toggle="tab">添加设备</a></li>
-			    <%} %>
+			    <!-- admin -->
+			    <li role="presentation" id="admin3"><a href="#addDeviceInstancePage" aria-controls="addDeviceInstancePage" role="tab" data-toggle="tab">添加设备</a></li>
+			    
 			  </ul>
 		
 			  <!-- Tab panes -->
@@ -313,8 +312,7 @@
 	      
 	      <!-- set page -->
 	      <div role="tabpanel" class="tab-pane fade" id="setPage" aria-labelledBy="set-tab">
-	        <form class="form-horizontal" style="margin-top:20px" 
-		action="RegisterServlet" method="POST">
+	        <div class="form-horizontal" style="margin-top:20px">
 		  <div class="form-group" style="margin-top:20px">
 		    <label for="username" class="col-sm-2 control-label">用户名</label>
 		    <div class="col-sm-5">
@@ -322,26 +320,18 @@
 		    </div>
 		  </div>
 		  <div class="form-group">
-		    <label for="password" class="col-sm-2 control-label">密码</label>
-		    <div class="col-sm-5">
-		      <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+		    <div class="col-sm-offset-2 col-sm-10">
+		      <button id="addUserBtn" class="btn btn-success">添加</button>
 		    </div>
 		  </div>
+		  
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button type="submit" class="btn btn-success">添加</button>
+		     	<p class="text-danger" id="addUserError"></p> 
 		    </div>
 		  </div>
-		  <%if (request.getAttribute("error")!=null){ %>
-		  <div class="form-group">
-		    <div class="col-sm-offset-2 col-sm-10">
-		     	<p class="text-danger">
-		     		<%=request.getAttribute("error") %>
-		     	</p> 
-		    </div>
-		  </div>
-		  <%} %>
-		</form>
+		  
+		</div><!-- form -->
 	      </div>
 	      <!-- set page end-->
 	    </div>
@@ -349,6 +339,15 @@
 	<script>
 		var deviceTable;
 		var deviceTypeTable;
+		$(document).ready(function(){
+			deviceTable = initDeviceTable();
+			deviceTypeTable = initDeviceTypeTable();
+			displayTable = initDisplayTable();
+			//scatterChart = initScatterChart();
+			initSelect();
+			initRole();
+		});
+		
 		$("#but").click(function(){
             var _len = $("#formatTable tbody tr").length;        
             $("#formatTable tbody").append("<tr id="+_len+">"
@@ -455,6 +454,7 @@
 			    	  //dataTable(){}返回一个jQuery,DataTable(){}返回一个api对象,前者可能出现有的函数是用不了。
 			    	  //使用api()将jQuery对象转化为api对象
 			    	  deviceTypeTable.api().ajax.reload();
+			    	  initSelect();
 			    	  alert("刷新完毕");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -495,6 +495,7 @@
 				      },  
 				      success: function(data) {
 				    	  alert(data.ret);
+				    	  displayTable.api().ajax.reload();
 				    	  deviceTable.api().ajax.reload();
 				    	  alert("刷新完毕");
 				      },
@@ -547,6 +548,38 @@
 			}
 			
 		});
+		$("#addUserBtn").click(function(){
+			$("#addUserError").text("");
+			var pro_id = $("#pro_id").text();
+			var username = $("input[name='username']").val();
+			//检查设备名
+			if(username == "" || username == null){
+				$("#addUserError").text("用户名不能为空！");
+				return;
+			}
+			//访问服务器，判断用户是否存在，插入user数据库，返回信息
+			$.ajax({  
+			      type: "POST",  
+			      url: "AddUserServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: { 
+			          "username": username,
+			     	  "pro_id": pro_id
+			      },  
+			      success: function(data) {
+			    	  //alert(data.ret);
+			    	  $("#addUserError").text(data.ret);
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      //alert(XMLHttpRequest.status);//200
+                      //alert(XMLHttpRequest.readyState);//4
+                      //alert(textStatus);//parseerror
+                      alert("error!");
+                  }
+			  });
+		});
 		function initTypeList(n){
 			$.get("AjaxServlet?flag=5",function(data,status){
 				var obj = jQuery.parseJSON(data);
@@ -574,18 +607,40 @@
 			$.get("AjaxServlet?flag=3&pro_id="+pro_id,function(data,status){
 				var obj = jQuery.parseJSON(data);
 				var len = obj.aaData.length;
+				$("select[id='deviceType']").html("");
 				for(var i = 0;i<len;i++){
 					$("select[id='deviceType']").append("<option>"+obj.aaData[i].for_name+"</option>");
 				}
 			});
+			
 		}
-		$(document).ready(function(){
-			deviceTable = initDeviceTable();
-			deviceTypeTable = initDeviceTypeTable();
-			displayTable = initDisplayTable();
-			//scatterChart = initScatterChart();
-			initSelect();
-		});
+		function initRole(){
+			//alert("u_id:"+$("#u_id").text().trim());
+			//alert("pro_id:"+$("#pro_id").text());
+			$.ajax({  
+			      type: "POST",  
+			      url: "AjaxServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "flag": "7",  
+			          "u_id":  $("#u_id").text().trim(),
+			          "pro_id": $("#pro_id").text()
+			      },  
+			      success: function(data) {
+			    	  //alert("success");
+			    	  //alert("role:"+data.ret);
+			    	  if(data.ret == 1){
+				    	  $("#admin1").css('display','none');
+				    	  $("#admin2").css('display','none');
+				    	  $("#admin3").css('display','none');
+			    	  }
+			      }  
+			  });
+			
+		}
+
 		$("#lineBtn").click(function(){
 			var dev_name = $("#dev_name_line").text();
 			var dev_id = $("#dev_id_line").text();
@@ -606,9 +661,9 @@
 			          "yName": yName
 			      },  
 			      success: function(data) {
-			    	  alert("begin initLineChart!");
+			    	  //alert("begin initLineChart!");
 			    	  initLineChart(dev_name,xName,yName,data.xData,data.yData);
-			    	  alert("end initLineChart!");
+			    	  //alert("end initLineChart!");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    	alert("error!");
@@ -640,9 +695,9 @@
 			          "yName": yName
 			      },  
 			      success: function(data) {
-			    	  alert("begin initAreaChart!");
+			    	  //alert("begin initAreaChart!");
 			    	  initAreaChart(dev_name,xName,yName,data.xData,data.yData);
-			    	  alert("end initAreaChart!");
+			    	  //alert("end initAreaChart!");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    	alert("error!");
@@ -674,9 +729,9 @@
 			          "yName": yName
 			      },  
 			      success: function(data) {
-			    	  alert("begin initScatterChart!");
+			    	  //alert("begin initScatterChart!");
 			    	  initScatterChart(dev_name,xName,yName,data.xData,data.yData);
-			    	  alert("end initScatterChart!");
+			    	  //alert("end initScatterChart!");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
 			    	alert("error!");
@@ -690,7 +745,7 @@
 		});
 		function getFormatName(nTd,oData){
 			$.ajax({  
-				      type: "GET",  
+				      type: "POST",  
 				      url: "AjaxServlet",
 				      async: true,
 				      dataType: "json",  
@@ -802,7 +857,6 @@
 			            text: ''
 			     },
 		         xAxis: {
-		             //categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 		         	title:{
 		         		text: xName
 		         	},
@@ -896,13 +950,6 @@
 			             borderWidth: 0
 			         },
 			        series: [{
-			            //name: 'USA',
-			            /*data: [null, null, null, null, null, 6 , 11, 32, 110, 235, 369, 640,1005, 1436,
-			            		2063, 3057, 4618, 6444, 9822, 15468, 20434, 24126,27387, 29459, 31056, 31982,
-			            		32040, 31233, 29224, 27342, 26662,26956, 27912, 28999, 28965, 27826, 25579,
-			            		25722, 24826, 24605,24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344,
-			            		23586,22380, 21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950,
-			                10871, 10824, 10577, 10527, 10475, 10421, 10358, 10295, 10104 ]*/
 			             name: dev_name,
 			             data: yData
 			            
@@ -966,75 +1013,34 @@
 			            }                                                                                
 			        },                                                                                   
 			        series: [{                                                                           
-			            name: dev_name,                                                                                                                  
-			            /*data: [[161.2, 51.6], [167.5, 59.0], [159.5, 49.2], [157.0, 63.0], [155.8, 53.6],
-			                [170.0, 59.0], [159.1, 47.6], [166.0, 69.8], [176.2, 66.8], [160.2, 75.2],   
-			                [172.5, 55.2], [170.9, 54.2], [172.9, 62.5], [153.4, 42.0], [160.0, 50.0],   
-			                [147.2, 49.8], [168.2, 49.2], [175.0, 73.2], [157.0, 47.8], [167.6, 68.8],   
-			                [159.5, 50.6], [175.0, 82.5], [166.8, 57.2], [176.5, 87.8], [170.2, 72.8],   
-			                [174.0, 54.5], [173.0, 59.8], [179.9, 67.3], [170.5, 67.8], [160.0, 47.0],   
-			                [154.4, 46.2], [162.0, 55.0], [176.5, 83.0], [160.0, 54.4], [152.0, 45.8],   
-			                [162.1, 53.6], [170.0, 73.2], [160.2, 52.1], [161.3, 67.9], [166.4, 56.6],   
-			                [168.9, 62.3], [163.8, 58.5], [167.6, 54.5], [160.0, 50.2], [161.3, 60.3],   
-			                [167.6, 58.3], [165.1, 56.2], [160.0, 50.2], [170.0, 72.9], [157.5, 59.8],   
-			                [167.6, 61.0], [160.7, 69.1], [163.2, 55.9], [152.4, 46.5], [157.5, 54.3],   
-			                [168.3, 54.8], [180.3, 60.7], [165.5, 60.0], [165.0, 62.0], [164.5, 60.3],   
-			                [156.0, 52.7], [160.0, 74.3], [163.0, 62.0], [165.7, 73.1], [161.0, 80.0],   
-			                [162.0, 54.7], [166.0, 53.2], [174.0, 75.7], [172.7, 61.1], [167.6, 55.7],   
-			                [151.1, 48.7], [164.5, 52.3], [163.5, 50.0], [152.0, 59.3], [169.0, 62.5],   
-			                [164.0, 55.7], [161.2, 54.8], [155.0, 45.9], [170.0, 70.6], [176.2, 67.2],   
-			                [170.0, 69.4], [162.5, 58.2], [170.3, 64.8], [164.1, 71.6], [169.5, 52.8],   
-			                [163.2, 59.8], [154.5, 49.0], [159.8, 50.0], [173.2, 69.2], [170.0, 55.9],   
-			                [161.4, 63.4], [169.0, 58.2], [166.2, 58.6], [159.4, 45.7], [162.5, 52.2],   
-			                [159.0, 48.6], [162.8, 57.8], [159.0, 55.6], [179.8, 66.8], [162.9, 59.4],   
-			                [161.0, 53.6], [151.1, 73.2], [168.2, 53.4], [168.9, 69.0], [173.2, 58.4],   
-			                [171.8, 56.2], [178.0, 70.6], [164.3, 59.8], [163.0, 72.0], [168.5, 65.2],   
-			                [166.8, 56.6], [172.7, 105.2], [163.5, 51.8], [169.4, 63.4], [167.8, 59.0],  
-			                [159.5, 47.6], [167.6, 63.0], [161.2, 55.2], [160.0, 45.0], [163.2, 54.0],   
-			                [162.2, 50.2], [161.3, 60.2], [149.5, 44.8], [157.5, 58.8], [163.2, 56.4],   
-			                [172.7, 62.0], [155.0, 49.2], [156.5, 67.2], [164.0, 53.8], [160.9, 54.4],   
-			                [162.8, 58.0], [167.0, 59.8], [160.0, 54.8], [160.0, 43.2], [168.9, 60.5],   
-			                [158.2, 46.4], [156.0, 64.4], [160.0, 48.8], [167.1, 62.2], [158.0, 55.5],   
-			                [167.6, 57.8], [156.0, 54.6], [162.1, 59.2], [173.4, 52.7], [159.8, 53.2],   
-			                [170.5, 64.5], [159.2, 51.8], [157.5, 56.0], [161.3, 63.6], [162.6, 63.2],   
-			                [160.0, 59.5], [168.9, 56.8], [165.1, 64.1], [162.6, 50.0], [165.1, 72.3],   
-			                [166.4, 55.0], [160.0, 55.9], [152.4, 60.4], [170.2, 69.1], [162.6, 84.5],   
-			                [170.2, 55.9], [158.8, 55.5], [172.7, 69.5], [167.6, 76.4], [162.6, 61.4],   
-			                [167.6, 65.9], [156.2, 58.6], [175.2, 66.8], [172.1, 56.6], [162.6, 58.6],   
-			                [160.0, 55.9], [165.1, 59.1], [182.9, 81.8], [166.4, 70.7], [165.1, 56.8],   
-			                [177.8, 60.0], [165.1, 58.2], [175.3, 72.7], [154.9, 54.1], [158.8, 49.1],   
-			                [172.7, 75.9], [168.9, 55.0], [161.3, 57.3], [167.6, 55.0], [165.1, 65.5],   
-			                [175.3, 65.5], [157.5, 48.6], [163.8, 58.6], [167.6, 63.6], [165.1, 55.2],   
-			                [165.1, 62.7], [168.9, 56.6], [162.6, 53.9], [164.5, 63.2], [176.5, 73.6],   
-			                [168.9, 62.0], [175.3, 63.6], [159.4, 53.2], [160.0, 53.4], [170.2, 55.0],   
-			                [162.6, 70.5], [167.6, 54.5], [162.6, 54.5], [160.7, 55.9], [160.0, 59.0],   
-			                [157.5, 63.6], [162.6, 54.5], [152.4, 47.3], [170.2, 67.7], [165.1, 80.9],   
-			                [172.7, 70.5], [165.1, 60.9], [170.2, 63.6], [170.2, 54.5], [170.2, 59.1],   
-			                [161.3, 70.5], [167.6, 52.7], [167.6, 62.7], [165.1, 86.3], [162.6, 66.4],   
-			                [152.4, 67.3], [168.9, 63.0], [170.2, 73.6], [175.2, 62.3], [175.2, 57.7],   
-			                [160.0, 55.4], [165.1, 104.1], [174.0, 55.5], [170.2, 77.3], [160.0, 80.5],  
-			                [167.6, 64.5], [167.6, 72.3], [167.6, 61.4], [154.9, 58.2], [162.6, 81.8],   
-			                [175.3, 63.6], [171.4, 53.4], [157.5, 54.5], [165.1, 53.6], [160.0, 60.0],   
-			                [174.0, 73.6], [162.6, 61.4], [174.0, 55.5], [162.6, 63.6], [161.3, 60.9],   
-			                [156.2, 60.0], [149.9, 46.8], [169.5, 57.3], [160.0, 64.1], [175.3, 63.6],   
-			                [169.5, 67.3], [160.0, 75.5], [172.7, 68.2], [162.6, 61.4], [157.5, 76.8],   
-			                [176.5, 71.8], [164.4, 55.5], [160.7, 48.6], [174.0, 66.4], [163.8, 67.3]] */
-			                data: yData
+			            name: dev_name,
+			            data: yData
 			        }]                                
 			});
 			return chart;
 		}
 		function showFormat(for_id){
-			$.get("AjaxServlet?flag=4&for_id="+for_id,function(data,status){
-				var obj = jQuery.parseJSON(data);
-				name_array = (obj.data.for_namelist).split(',');
-				type_array = (obj.data.for_typelist).split(',');
-				$('#deviceTypeDetailTbody').html("");
-				$('#deviceTypeDetailHeading').html(obj.data.for_name);
-				for(i in name_array){
-					$('#deviceTypeDetailTbody').append("<tr><td>"+name_array[i]+"</td><td>"+type_array[i]+"</td></tr>");
-				}
-			});
+			$.ajax({  
+			      type: "POST",  
+			      url: "AjaxServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {  
+			          "flag": "4",  
+			          "for_id": for_id    
+			      },  
+			      success: function(data) {
+			    	  //alert("success");
+						name_array = (data.data.for_namelist).split(',');
+						type_array = (data.data.for_typelist).split(',');
+						$('#deviceTypeDetailTbody').html("");
+						$('#deviceTypeDetailHeading').html(data.data.for_name);
+						for(i in name_array){
+							$('#deviceTypeDetailTbody').append("<tr><td>"+name_array[i]+"</td><td>"+type_array[i]+"</td></tr>");
+						}
+			      }  
+			  });
 		}
 		function deleteFormat(for_id){
 			//alert("for_id:"+for_id);
@@ -1051,6 +1057,7 @@
 			      success: function(data) {
 			    	  alert(data.ret);
 			    	  deviceTypeTable.api().ajax.reload();
+			    	  initSelect();
 			    	  alert("刷新完毕");
 			      },
 			      error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -1062,18 +1069,37 @@
 			  });
 		}
 		function deleteDevice(dev_id){
-			$.get("AjaxServlet?flag=6&dev_id="+dev_id,function(data,status){
-				var obj = jQuery.parseJSON(data);
-				alert(obj.ret);
-				deviceTable.api().ajax.reload();
-				alert("刷新完毕");
-			});
+			$.ajax({  
+			      type: "POST",  
+			      url: "AjaxServlet",
+			      async: true,
+			      dataType: "json",  
+			      cache: false,  
+		      	  data: {
+		      		  "flag": 6,
+			          "dev_id": dev_id
+			      },  
+			      success: function(data) {
+			    	  //var obj = jQuery.parseJSON(data);
+						//alert(obj.ret);
+						displayTable.api().ajax.reload();
+						deviceTable.api().ajax.reload();
+						alert("刷新完毕");
+			      },
+			      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);//200
+                    alert(XMLHttpRequest.readyState);//4
+                    alert(textStatus);//parseerror
+                    //alert("error!");
+                }
+			  });
 		}
 		function setChart(dev_id){
 			$("#dev_id_line").text(dev_id);
 			$("#dev_id_area").text(dev_id);
 			$("#dev_id_scatter").text(dev_id);
-			
+			$("#deviceDataTable thead").html("");
+			$("#deviceDataTable tbody").html("");
 			$.ajax({  
 			      type: "POST",  
 			      url: "GetDeviceDataServlet",

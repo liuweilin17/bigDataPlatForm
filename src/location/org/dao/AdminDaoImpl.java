@@ -4,89 +4,92 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class BaselineDaoImpl implements BaselineDao{
+public class AdminDaoImpl implements AdminDao {
 
 	@Override
-	public void insertBaseline(Baseline bl) {
+	public List<Integer> findPro_idByU_id(int u_id) {
 		// TODO Auto-generated method stub
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try{
-			conn = DbUtils.getConnection();
-			String sql = "insert into baseline(m_name,r_name,u_name) values(?,?,?)";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, bl.getM_name());
-			pstmt.setString(2, bl.getR_name());
-			pstmt.setString(3, bl.getU_name());
-			pstmt.executeUpdate();
-			System.out.println("a baseline has been inserted!");
-		}catch(SQLException e){
-			e.printStackTrace();
-		}finally{
-			DbUtils.closeStatement(pstmt);
-			DbUtils.closeConnection();
-		}
-	}
-
-	@Override
-	public List<Baseline> findBaseline(String username) {
-		// TODO Auto-generated method stub
-		List<Baseline> ret = new LinkedList<Baseline>();
+		List<Integer> pro_idList = new ArrayList<Integer>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try{
 			conn = DbUtils.getConnection();
-			String sql = "select * from baseline where u_name = ?";
+			String sql = "select * from admin where u_id = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, username);
+			pstmt.setInt(1, u_id);
 			//System.out.println(username);
 			rs = pstmt.executeQuery();
 			while(rs.next()){
-				Baseline tmp = new Baseline(rs.getDouble("bl_id"),rs.getString("m_name")
-						,rs.getString("r_name"),rs.getString("u_name"));
-				ret.add(tmp);
+				pro_idList.add(rs.getInt("pro_id"));
 			}
 		}catch(SQLException e){
 			e.printStackTrace();
 		}finally{
+			DbUtils.closeResultSet(rs);
 			DbUtils.closeStatement(pstmt);
 			DbUtils.closeConnection();
 		}
 		
-		System.out.println("返回baselin列表的大小为："+ret.size());
-		return ret;
-		
+		System.out.println("返回admin pro_id 数量的大小为："+pro_idList.size());
+		return pro_idList;
 	}
 
 	@Override
-	public double findBaseline(Baseline bl) {
+	public boolean insertAdmin(int u_id, int pro_id, int role) {
 		// TODO Auto-generated method stub
+		boolean ret = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		double flag = -1;
 		try{
 			conn = DbUtils.getConnection();
-			String sql = "select * from baseline where m_name=? and r_name=? and u_name=?";
+			String sql = "insert into admin(u_id,pro_id,role) values(?,?,?)";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, bl.getM_name());
-			pstmt.setString(2, bl.getR_name());
-			pstmt.setString(3, bl.getU_name());
-			rs = pstmt.executeQuery();
-			if(rs.next()){
-				flag= rs.getDouble("bl_id");
-			}
+			pstmt.setInt(1, u_id);
+			pstmt.setInt(2, pro_id);
+			pstmt.setInt(3, role);
+			pstmt.executeUpdate();
+			System.out.println("an admin has been inserted!");
 		}catch(SQLException e){
 			e.printStackTrace();
 		}finally{
 			DbUtils.closeStatement(pstmt);
 			DbUtils.closeConnection();
 		}
-		return flag;
+		return ret;
 	}
-	
+
+	@Override
+	public int findRole(int u_id, int pro_id) {
+		// TODO Auto-generated method stub
+		int role = 0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try{
+			conn = DbUtils.getConnection();
+			String sql = "select * from admin where u_id = ? and pro_id = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, u_id);
+			pstmt.setInt(2, pro_id);
+			//System.out.println(username);
+			rs = pstmt.executeQuery();
+			if(rs.next()){
+				role = rs.getInt("role");
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeResultSet(rs);
+			DbUtils.closeStatement(pstmt);
+			DbUtils.closeConnection();
+		}
+		
+		return role;
+	}
+
 }

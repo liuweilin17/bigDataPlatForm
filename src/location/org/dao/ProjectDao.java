@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface ProjectDao {
 	void insertProject(Project pro);
-	boolean findProjectName(String  pro_name);
-	List<Project> findProject(String username);
+	Project findProjectName(String  pro_name);
+	List<Project> findProject(int u_id);
 }

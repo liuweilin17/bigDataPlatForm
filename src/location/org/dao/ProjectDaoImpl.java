@@ -16,11 +16,10 @@ public class ProjectDaoImpl implements ProjectDao{
 		PreparedStatement pstmt = null;
 		try{
 			conn = DbUtils.getConnection();
-			String sql = "insert into project(pro_name,pro_info,u_name) values(?,?,?)";
+			String sql = "insert into project(pro_name,pro_info) values(?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, pro.getPro_name());
 			pstmt.setString(2, pro.getInfo());
-			pstmt.setString(3, pro.getU_name());
 			pstmt.executeUpdate();
 			System.out.println("a project has been inserted!");
 		}catch(SQLException e){
@@ -32,8 +31,8 @@ public class ProjectDaoImpl implements ProjectDao{
 	}
 
 	@Override
-	public boolean findProjectName(String pro_name) {
-		boolean ret = true;
+	public Project findProjectName(String pro_name) {
+		Project project = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -45,8 +44,8 @@ public class ProjectDaoImpl implements ProjectDao{
 			rs = pstmt.executeQuery();
 			System.out.println("in search!");
 			System.out.println(rs.getFetchSize());
-			if(!rs.next()){
-				ret = false; 
+			if(rs.next()){
+				project = new Project(rs.getInt("pro_id"),rs.getString("pro_name"),rs.getString("info")); 
 			}
 		}catch(SQLException e){
 			e.printStackTrace();
@@ -56,11 +55,11 @@ public class ProjectDaoImpl implements ProjectDao{
 			DbUtils.closeConnection();
 		}
 		// TODO Auto-generated method stub
-		return ret;
+		return project;
 	}
 
 	@Override
-	public List<Project> findProject(String username) {
+	public List<Project> findProject(int u_id) {
 		// TODO Auto-generated method stub
 		List<Project> ret = new LinkedList<Project>();
 		Connection conn = null;
@@ -68,14 +67,14 @@ public class ProjectDaoImpl implements ProjectDao{
 		ResultSet rs = null;
 		try{
 			conn = DbUtils.getConnection();
-			String sql = "select * from project where u_name = ?";
+			String sql = "select * from project where pro_id in (select pro_id from admin where u_id = ?)";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, username);
-			//System.out.println(username);
+			pstmt.setInt(1, u_id);
+			System.out.println(pstmt);
 			rs = pstmt.executeQuery();
 			while(rs.next()){
 				Project tmp = new Project(rs.getInt("pro_id"),rs.getString("pro_name")
-						,rs.getString("pro_info"),rs.getString("u_name"));
+						,rs.getString("pro_info"));
 				ret.add(tmp);
 			}
 		}catch(SQLException e){

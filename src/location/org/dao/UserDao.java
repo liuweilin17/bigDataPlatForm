@@ -5,7 +5,7 @@ public interface UserDao {
 	void deleteUser(int id);
 	//void findUserById(int id);
 	//void findUserByName(int name);
-	boolean findUser(String username, String password, int role);
-	boolean findUsername(String username);
+	User findUser(String username, String password);
+	User findUsername(String username);
 	//List<User> getAllUses(String[] params);
 }
